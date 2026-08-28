@@ -649,12 +649,12 @@
             }
         }
 
-        // Part 1: Computational problem templates with fully randomized numbers and scrambled templates order
+        // Part 1: Fully dynamic randomized computational templates with randomized sentences and domain applications
         const part1Templates = [
             {
                 title: "Sample Variance and Standard Deviation",
                 generate: () => {
-                    const baseMean = [4, 5, 6][Math.floor(Math.random() * 3)];
+                    const baseMean = [4, 5, 6, 7][Math.floor(Math.random() * 4)];
                     const devs = [-3, -1, 0, 1, 3].sort(() => Math.random() - 0.5);
                     const rawData = devs.map(d => baseMean + d);
                     const mean = baseMean;
@@ -663,6 +663,13 @@
                     const variance = (sumSq / 4).toFixed(1);
                     const sd = Math.sqrt(sumSq / 4).toFixed(2);
                     const sdVal = parseFloat(sd);
+
+                    const contexts = [
+                        `You are testing a new movement script in Godot. You record stamina drain times for 5 tactical sprints. The data points (<span class='formula-code'>x</span>) are: <span class='formula-code'>${rawData.join(', ')}</span>. The sample mean (<span class='formula-code'>x&#772;</span>) is <span class='formula-code'>${mean}</span>.`,
+                        `You monitor CPU temperature fluctuations across 5 stress tests for an IoT dashboard project. The recorded temperatures (<span class='formula-code'>x</span>) are: <span class='formula-code'>${rawData.join(', ')}</span>. The sample mean (<span class='formula-code'>x&#772;</span>) is <span class='formula-code'>${mean}</span>.`,
+                        `You analyze page load latency across 5 test requests on your web portfolio. The response times (<span class='formula-code'>x</span>) are: <span class='formula-code'>${rawData.join(', ')}</span>. The sample mean (<span class='formula-code'>x&#772;</span>) is <span class='formula-code'>${mean}</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
 
                     let wrongVar1 = (parseFloat(variance) * 1.5).toFixed(1);
                     let wrongVar2 = (parseFloat(variance) * 0.8).toFixed(1);
@@ -679,7 +686,7 @@
                     let correctSdIndex = formattedSdOpts.findIndex(opt => opt.includes(`s = ${sdVal.toFixed(2)}`));
 
                     return {
-                        context: `You are testing a new movement script in Godot. You record stamina drain times for 5 tactical sprints. The data points (<span class='formula-code'>x</span>) are: <span class='formula-code'>${rawData.join(', ')}</span>. The sample mean (<span class='formula-code'>x&#772;</span>) is <span class='formula-code'>${mean}</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
@@ -704,13 +711,20 @@
             {
                 title: "Coefficient of Variation (CV)",
                 generate: () => {
-                    const mean = [4, 5, 8, 10][Math.floor(Math.random() * 4)];
-                    const sd = [1.2, 1.5, 2.0, 2.5][Math.floor(Math.random() * 4)];
+                    const mean = [4, 5, 8, 10, 12][Math.floor(Math.random() * 5)];
+                    const sd = [1.2, 1.5, 2.0, 2.5, 3.0][Math.floor(Math.random() * 5)];
                     const cv = (sd / mean).toFixed(3);
                     const cvFormatted = (sd / mean).toFixed(2);
 
+                    const contexts = [
+                        `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>.`,
+                        `In your multiplayer game matchmaking queue, wait time has a <span class='formula-code'>Mean = ${mean} seconds</span> and a <span class='formula-code'>Std Dev = ${sd} seconds</span>.`,
+                        `In your API gateway telemetry, request transaction volume has a <span class='formula-code'>Mean = ${mean} MB</span> and a <span class='formula-code'>Std Dev = ${sd} MB</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
                     return {
-                        context: `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "input",
@@ -726,10 +740,17 @@
             {
                 title: "Standard Error (SE)",
                 generate: () => {
-                    const sigma = [60, 90, 120, 150][Math.floor(Math.random() * 4)];
+                    const sigma = [60, 90, 120, 150, 180][Math.floor(Math.random() * 5)];
                     const n = [100, 144, 225, 400][Math.floor(Math.random() * 4)];
                     const se = (sigma / Math.sqrt(n)).toFixed(2);
                     const seVal = parseFloat(se);
+
+                    const contexts = [
+                        `Your backend API has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span>. You collect a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} requests</span>.`,
+                        `Your e-commerce product recommendation algorithm has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span> in render times across a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} user sessions</span>.`,
+                        `Your server cluster network latency has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span> over a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} packet checks</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
 
                     let wrong1 = (seVal + 1.5).toFixed(2);
                     let wrong2 = Math.max(0.2, seVal - 1.2).toFixed(2);
@@ -739,7 +760,7 @@
                     let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${seVal.toFixed(2)}`));
 
                     return {
-                        context: `Your API has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span>. You collect a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} requests</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
@@ -756,10 +777,16 @@
             {
                 title: "Sample Covariance",
                 generate: () => {
-                    const xVals = [2, 4, 6];
+                    const xPools = [
+                        [2, 4, 6],
+                        [1, 3, 5],
+                        [4, 6, 8]
+                    ];
+                    const xVals = xPools[Math.floor(Math.random() * xPools.length)];
+                    const xMean = xVals[1];
+                    const slope = [2, 3][Math.floor(Math.random() * 2)];
                     const yBase = [10, 15, 20][Math.floor(Math.random() * 3)];
-                    const yVals = xVals.map(x => yBase + 2 * (x - 4));
-                    const xMean = 4;
+                    const yVals = xVals.map(x => yBase + slope * (x - xMean));
                     const yMean = yBase;
                     let sumProd = 0;
                     for(let i=0; i<3; i++) {
@@ -767,6 +794,13 @@
                     }
                     const cov = (sumProd / 2).toFixed(1);
                     const covVal = parseFloat(cov);
+
+                    const contexts = [
+                        `You analyze player Level (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and Inventory Slots (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) for 3 players. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`,
+                        `You analyze server CPU Utilization percentage (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and active user Connection Count in hundreds (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) over 3 intervals. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`,
+                        `You evaluate e-commerce customer browsing duration in minutes (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and total cart checkout value in dollars (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) for 3 buyers. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
 
                     let wrong1 = (covVal + 10).toFixed(1);
                     let wrong2 = Math.max(0, covVal - 15).toFixed(1);
@@ -776,7 +810,7 @@
                     let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${covVal}`));
 
                     return {
-                        context: `You analyze player Level (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and Inventory Slots (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) for 3 players. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
@@ -793,11 +827,17 @@
             {
                 title: "Additive Law of Probability",
                 generate: () => {
-                    const pA = [0.50, 0.60, 0.70][Math.floor(Math.random() * 3)];
-                    const pB = [0.40, 0.45, 0.50][Math.floor(Math.random() * 3)];
+                    const pA = [0.50, 0.55, 0.60, 0.65, 0.70][Math.floor(Math.random() * 5)];
+                    const pB = [0.35, 0.40, 0.45, 0.50][Math.floor(Math.random() * 4)];
                     const pUnion = [0.75, 0.80, 0.85][Math.floor(Math.random() * 3)];
                     const pInter = (pA + pB - pUnion).toFixed(2);
                     const interVal = parseFloat(pInter);
+
+                    const contexts = [
+                        `In your web portal telemetry, <span class='formula-code'>${(pA*100).toFixed(0)}%</span> view dashboard modules (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${(pB*100).toFixed(0)}%</span> view reports (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${(pUnion*100).toFixed(0)}%</span> view at least one (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`,
+                        `In your mobile application analytics, <span class='formula-code'>${(pA*100).toFixed(0)}%</span> of users open the settings menu (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${(pB*100).toFixed(0)}%</span> open the profile screen (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${(pUnion*100).toFixed(0)}%</span> open at least one of these screens (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
 
                     let wrong1 = (interVal + 0.15).toFixed(2);
                     let wrong2 = Math.max(0.05, interVal - 0.10).toFixed(2);
@@ -807,11 +847,11 @@
                     let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${interVal.toFixed(2)}`));
 
                     return {
-                        context: `In your web portal telemetry, <span class='formula-code'>${pA*100}%</span> view dashboard modules (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${pB*100}%</span> view reports (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${pUnion*100}%</span> view at least one (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
-                                label: "What proportion of users view BOTH modules and reports? P(A &cap; B)",
+                                label: "What proportion of users trigger BOTH events? P(A &cap; B)",
                                 hint: "Additive Law: <span class='formula-code'>P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span>.",
                                 options: formattedOpts,
                                 correctIndex: correctIdx,
@@ -824,19 +864,33 @@
             {
                 title: "Conditional Probability",
                 generate: () => {
-                    const pB = 0.50;
-                    const pInter = 0.20;
+                    const pB = [0.40, 0.50, 0.60][Math.floor(Math.random() * 3)];
+                    const pInter = [0.15, 0.20, 0.25][Math.floor(Math.random() * 3)];
                     const pCond = (pInter / pB).toFixed(2);
+                    const pCondVal = parseFloat(pCond);
+
+                    const contexts = [
+                        `In your telemetry data, the probability of visiting the main reports page is <span class='formula-code'>P(B) = ${pB}</span>, and the joint probability of visiting both the dashboard and reports is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`,
+                        `In your user session logs, the probability of encountering a cached API response is <span class='formula-code'>P(B) = ${pB}</span>, and the joint probability of encountering both a cache hit and a successful database write is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    let wrong1 = (pCondVal + 0.15).toFixed(2);
+                    let wrong2 = Math.max(0.05, pCondVal - 0.10).toFixed(2);
+                    let wrong3 = (pCondVal + 0.30).toFixed(2);
+                    let opts = [pCondVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
+                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(2)}`);
+                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${pCondVal.toFixed(2)}`));
 
                     return {
-                        context: `In your telemetry data, the probability of viewing reports is <span class='formula-code'>P(B) = ${pB}</span>, and joint probability of viewing both modules and reports is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
-                                label: "If a user views reports (B), what is the probability they also view modules (A)? Compute P(A|B).",
+                                label: "Given event B occurs, what is the probability that event A also occurs? Compute P(A|B).",
                                 hint: "Conditional Probability: <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span>.",
-                                options: ["A) 0.25", "B) 0.40", "C) 0.50", "D) 0.60"],
-                                correctIndex: 1,
+                                options: formattedOpts,
+                                correctIndex: correctIdx,
                                 explanation: `<span class='formula-code'>P(A|B) = ${pInter} / ${pB} = ${pCond}</span>.`
                             }
                         ]
@@ -846,16 +900,36 @@
             {
                 title: "Law of Total Probability",
                 generate: () => {
+                    const pM = [0.30, 0.40, 0.50][Math.floor(Math.random() * 3)];
+                    const pNotM = (1 - pM).toFixed(2);
+                    const pKM = [0.70, 0.75, 0.80][Math.floor(Math.random() * 3)];
+                    const pKNotM = [0.10, 0.15, 0.20][Math.floor(Math.random() * 3)];
+                    const pTotal = ((pKM * pM) + (pKNotM * pNotM)).toFixed(3);
+                    const pTotalVal = parseFloat(pTotal);
+
+                    const contexts = [
+                        `You parse voice commands for an assistant. <span class='formula-code'>${(pM*100).toFixed(0)}%</span> of commands are media playback (<span class='formula-code'>P(M)=${pM}</span>). Keyword "play" appears in <span class='formula-code'>${(pKM*100).toFixed(0)}%</span> of media commands (<span class='formula-code'>P(K|M)=${pKM}</span>) and in <span class='formula-code'>${(pKNotM*100).toFixed(0)}%</span> of non-media commands (<span class='formula-code'>P(K|not M)=${pKNotM}</span>).`,
+                        `You analyze user authentication requests. <span class='formula-code'>${(pM*100).toFixed(0)}%</span> of logins originate from trusted mobile devices (<span class='formula-code'>P(M)=${pM}</span>). Two-factor authentication is triggered in <span class='formula-code'>${(pKM*100).toFixed(0)}%</span> of trusted logins (<span class='formula-code'>P(K|M)=${pKM}</span>) and in <span class='formula-code'>${(pKNotM*100).toFixed(0)}%</span> of untrusted logins (<span class='formula-code'>P(K|not M)=${pKNotM}</span>).`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    let wrong1 = (pTotalVal + 0.10).toFixed(3);
+                    let wrong2 = Math.max(0.05, pTotalVal - 0.08).toFixed(3);
+                    let wrong3 = (pTotalVal + 0.20).toFixed(3);
+                    let opts = [pTotalVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
+                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(3)}`);
+                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${pTotalVal.toFixed(3)}`));
+
                     return {
-                        context: `You parse voice commands for an assistant. <span class='formula-code'>40%</span> of commands are media playback (<span class='formula-code'>P(M)=0.40</span>). Keyword "play" appears in <span class='formula-code'>75%</span> of media commands (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'>10%</span> of non-media commands (<span class='formula-code'>P(K|not M)=0.10</span>).`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
-                                label: "Compute overall probability that the keyword 'play' is spoken, P(K).",
+                                label: "Compute overall probability that the target condition occurs, P(K).",
                                 hint: "Law of Total Probability: <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
-                                options: ["A) 0.360", "B) 0.420", "C) 0.350", "D) 0.500"],
-                                correctIndex: 0,
-                                explanation: `<span class='formula-code'>P(K) = (0.75 &times; 0.40) + (0.10 &times; 0.60) = 0.30 + 0.06 = 0.360</span>.`
+                                options: formattedOpts,
+                                correctIndex: correctIdx,
+                                explanation: `<span class='formula-code'>P(K) = (${pKM} &times; ${pM}) + (${pKNotM} &times; ${pNotM}) = ${pTotal}</span>.`
                             }
                         ]
                     };
@@ -864,15 +938,27 @@
             {
                 title: "Bayes Inference",
                 generate: () => {
+                    const pM = 0.40;
+                    const pKM = 0.75;
+                    const pK = 0.36;
+                    const pMGivenK = ((pKM * pM) / pK).toFixed(3);
+                    const pMGivenK2 = ((pKM * pM) / pK).toFixed(2);
+
+                    const contexts = [
+                        `Using assistant voice command telemetry where <span class='formula-code'>P(M)=${pM}</span>, <span class='formula-code'>P(K|M)=${pKM}</span>, and overall keyword probability <span class='formula-code'>P(K)=${pK}</span>.`,
+                        `Using security gateway telemetry where trusted mobile login probability is <span class='formula-code'>P(M)=${pM}</span>, conditional 2FA trigger probability is <span class='formula-code'>P(K|M)=${pKM}</span>, and overall 2FA trigger probability is <span class='formula-code'>P(K)=${pK}</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
                     return {
-                        context: `Using assistant voice command telemetry where <span class='formula-code'>P(M)=0.40</span>, <span class='formula-code'>P(K|M)=0.75</span>, and overall keyword probability <span class='formula-code'>P(K)=0.36</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "input",
-                                label: "If the microphone detects 'play', what is P(M|K)? (Type rounded decimal to 3 places)",
+                                label: "If the target condition is detected, what is P(M|K)? (Type rounded decimal to 3 places)",
                                 hint: "Bayes' theorem: <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
-                                acceptAnswers: ["0.833", "0.83"],
-                                explanation: `<span class='formula-code'>P(M|K) = (0.75 &times; 0.40) / 0.36 = 0.30 / 0.36 &approx; 0.833</span>.`
+                                acceptAnswers: [pMGivenK, pMGivenK2, String(Number(pMGivenK))],
+                                explanation: `<span class='formula-code'>P(M|K) = (${pKM} &times; ${pM}) / ${pK} &approx; ${pMGivenK}</span>.`
                             }
                         ]
                     };
@@ -881,16 +967,35 @@
             {
                 title: "Poisson Distribution",
                 generate: () => {
+                    const lam = [1, 2, 3][Math.floor(Math.random() * 3)];
+                    const y = 1;
+                    const prob = ((Math.pow(lam, y) * Math.exp(-lam)) / 1).toFixed(3);
+                    const probVal = parseFloat(prob);
+
+                    const contexts = [
+                        `Your cloud server receives an average of <span class='formula-code'>${lam} critical exceptions per hour (&lambda; = ${lam})</span>.`,
+                        `Your database cluster experiences an average of <span class='formula-code'>${lam} deadlocks per hour (&lambda; = ${lam})</span>.`,
+                        `Your e-commerce gateway encounters an average of <span class='formula-code'>${lam} timeout errors per minute (&lambda; = ${lam})</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    let wrong1 = (probVal + 0.12).toFixed(3);
+                    let wrong2 = Math.max(0.02, probVal - 0.09).toFixed(3);
+                    let wrong3 = (probVal + 0.25).toFixed(3);
+                    let opts = [probVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
+                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(3)}`);
+                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${probVal.toFixed(3)}`));
+
                     return {
-                        context: `Your cloud server receives an average of <span class='formula-code'>2 critical exceptions per hour (&lambda; = 2)</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
-                                label: "What is the probability of receiving exactly 1 exception in an hour? (e &approx; 2.718)",
+                                label: `What is the probability of receiving exactly ${y} incident in the specified interval? (e &approx; 2.718)`,
                                 hint: "Poisson formula: <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span>",
-                                options: ["A) 0.271", "B) 0.135", "C) 0.542", "D) 0.090"],
-                                correctIndex: 0,
-                                explanation: `<span class='formula-code'>P(1) = (2^1 &times; e^(-2)) / 1! &approx; 0.271</span>.`
+                                options: formattedOpts,
+                                correctIndex: correctIdx,
+                                explanation: `<span class='formula-code'>P(${y}) = (${lam}^${y} &times; e^(-${lam})) / 1! &approx; ${prob}</span>.`
                             }
                         ]
                     };
@@ -899,16 +1004,38 @@
             {
                 title: "Binomial Distribution",
                 generate: () => {
+                    const n = [4, 5][Math.floor(Math.random() * 2)];
+                    const p = [0.40, 0.50][Math.floor(Math.random() * 2)];
+                    const expVal = (n * p).toFixed(2);
+                    const varVal = (n * p * (1 - p)).toFixed(2);
+
+                    const contexts = [
+                        `You build a game mechanic where a player has a <span class='formula-code'>${(p*100).toFixed(0)}% chance</span> to dodge an attack (<span class='formula-code'>p = ${p}</span>). The player attempts <span class='formula-code'>${n} consecutive dodges (n = ${n})</span>.`,
+                        `You test a network packet routing protocol with a <span class='formula-code'>${(p*100).toFixed(0)}% success probability</span> for delivery per transmission (<span class='formula-code'>p = ${p}</span>). The system executes <span class='formula-code'>${n} independent transmissions (n = ${n})</span>.`,
+                        `You evaluate a machine learning classification feature where a model has a <span class='formula-code'>${(p*100).toFixed(0)}% accuracy rate</span> on test records (<span class='formula-code'>p = ${p}</span>). You evaluate <span class='formula-code'>${n} independent records (n = ${n})</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    let rawOpts = [
+                        `E(X) = ${expVal}, Variance = ${varVal}`,
+                        `E(X) = ${(Number(expVal)+0.5).toFixed(2)}, Variance = ${(Number(varVal)+0.5).toFixed(2)}`,
+                        `E(X) = ${(Math.max(1, Number(expVal)-1)).toFixed(2)}, Variance = ${(Number(varVal)+1).toFixed(2)}`,
+                        `E(X) = ${expVal}, Variance = ${(Number(varVal)*1.5).toFixed(2)}`
+                    ].sort(() => Math.random() - 0.5);
+
+                    let formattedOpts = rawOpts.map((opt, idx) => `${String.fromCharCode(65+idx)}) ${opt}`);
+                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`E(X) = ${expVal}, Variance = ${varVal}`));
+
                     return {
-                        context: `You build a game mechanic where a player has a <span class='formula-code'>50% chance</span> to dodge an attack (<span class='formula-code'>p = 0.50</span>). The player attempts <span class='formula-code'>5 consecutive dodges (n = 5)</span>.`,
+                        context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
-                                label: "What is the expected number of successful dodges E(X) and the variance &sigma;&sup2;?",
+                                label: "What is the expected number of successful outcomes E(X) and the variance &sigma;&sup2;?",
                                 hint: "Binomial formulas: <span class='formula-code'>E(X) = np</span> and <span class='formula-code'>&sigma;&sup2; = np(1-p)</span>.",
-                                options: ["A) E(X) = 2.5, Variance = 1.25", "B) E(X) = 2.0, Variance = 1.0", "C) E(X) = 3.0, Variance = 0.75", "D) E(X) = 2.5, Variance = 2.5"],
-                                correctIndex: 0,
-                                explanation: `<span class='formula-code'>E(X) = 5 &times; 0.50 = 2.5</span>. <span class='formula-code'>&sigma;&sup2; = 5 &times; 0.50 &times; 0.50 = 1.25</span>.`
+                                options: formattedOpts,
+                                correctIndex: correctIdx,
+                                explanation: `<span class='formula-code'>E(X) = ${n} &times; ${p} = ${expVal}</span>. <span class='formula-code'>&sigma;&sup2; = ${n} &times; ${p} &times; ${(1-p).toFixed(2)} = ${varVal}</span>.`
                             }
                         ]
                     };
@@ -916,307 +1043,361 @@
             }
         ];
 
-        // Part 2: Master Question Bank for 50-Item Conceptual Exam (Sourced strictly from PDFs)
+        // Part 2: Master Question Bank for Conceptual Exam
         const conceptualBank = [
             {
-                q: "What is the primary difference between a population and a sample  ?",
-                options: ["A) A population is a subset of a sample", "B) A population includes all items of interest, while a sample is a subset drawn from it  ", "C) Samples are always more expensive to observe than populations  ", "D) Populations use statistics while samples use parameters  "],
+                q: "What is the primary difference between a population and a sample?",
+                options: ["A) A population is a subset of a sample", "B) A population includes all items of interest, while a sample is a subset drawn from it", "C) Samples are always more expensive to observe than populations", "D) Populations use statistics while samples use parameters"],
                 correct: 1,
                 source: "Statistics Fundamentals"
             },
             {
-                q: "Which level of measurement features a true zero point, allowing ratios to be mathematically meaningful  ?",
-                options: ["A) Nominal", "B) Ordinal", "C) Interval  ", "D) Ratio "],
+                q: "Which level of measurement features a true zero point, allowing ratios to be mathematically meaningful?",
+                options: ["A) Nominal", "B) Ordinal", "C) Interval", "D) Ratio"],
                 correct: 3,
                 source: "Statistics Fundamentals"
             },
             {
-                q: "In a right-skewed (positively skewed) distribution, what is the typical relationship between the mean and median ?",
-                options: ["A) Mean is greater than median", "B) Mean is less than median  ", "C) Mean equals median equals mode  ", "D) Median is greater than mode"],
+                q: "In a right-skewed (positively skewed) distribution, what is the typical relationship between the mean and median?",
+                options: ["A) Mean is greater than median", "B) Mean is less than median", "C) Mean equals median equals mode", "D) Median is greater than mode"],
                 correct: 0,
                 source: "Statistics Fundamentals"
             },
             {
-                q: "Why do we divide by n - 1 instead of n in the sample variance formula  ?",
-                options: ["A) To make calculations faster", "B) To correct upward and provide an unbiased estimator of the population variance  ", "C) Because samples are always larger than populations", "D) To eliminate negative differences"],
+                q: "Why do we divide by n - 1 instead of n in the sample variance formula?",
+                options: ["A) To make calculations faster", "B) To correct upward bias and provide an unbiased estimator of the population variance", "C) Because samples are always larger than populations", "D) To eliminate negative differences"],
                 correct: 1,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What does the Central Limit Theorem state about the sampling distribution of the mean  ?",
-                options: ["A) It is always uniform", "B) It approximates a normal distribution regardless of population shape when n >= 30  ", "C) It requires normally distributed populations", "D) Its variance increases with sample size"],
+                q: "What does the Central Limit Theorem state about the sampling distribution of the mean?",
+                options: ["A) It is always uniform", "B) It approximates a normal distribution regardless of population shape when n >= 30", "C) It requires normally distributed populations", "D) Its variance increases with sample size"],
                 correct: 1,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What is the conventional range of real numbers used to express probability  ?",
-                options: ["A) -1 to +1", "B) 0 to 100", "C) 0 to 1  ", "D) 1 to 52"],
+                q: "What is the conventional range of real numbers used to express probability?",
+                options: ["A) -1 to +1", "B) 0 to 100", "C) 0 to 1", "D) 1 to 52"],
                 correct: 2,
-                source: "Probabilities  "
+                source: "Probabilities"
             },
             {
-                q: "Which rule states that the probability of two independent events happening together equals the product of their individual probabilities  ?",
-                options: ["A) Additive law  ", "B) Multiplication rule  ", "C) Law of total probability  ", "D) Complement rule"],
+                q: "Which rule states that the probability of two independent events happening together equals the product of their individual probabilities?",
+                options: ["A) Additive law", "B) Multiplication rule", "C) Law of total probability", "D) Complement rule"],
                 correct: 1,
-                source: "Probabilities  "
+                source: "Probabilities"
             },
             {
-                q: "What does the complement of an event A (written as A') represent  ?",
-                options: ["A) The exact same event occurring twice", "B) Everything the event leaves out, completing the sample space  ", "C) The intersection of A and B", "D) An impossible outcome"],
+                q: "What does the complement of an event A (written as A') represent?",
+                options: ["A) The exact same event occurring twice", "B) Everything the event leaves out, completing the sample space", "C) The intersection of A and B", "D) An impossible outcome"],
                 correct: 1,
-                source: "Probabilities  "
+                source: "Probabilities"
             },
             {
-                q: "What is the very first step in the data science pipeline before any pre-processing or modeling can occur  ?",
-                options: ["A) Data collection  ", "B) Machine learning training", "C) Dashboard reporting", "D) Model optimization"],
+                q: "What is the very first step in the data science pipeline before any pre-processing or modeling can occur?",
+                options: ["A) Data collection", "B) Machine learning training", "C) Dashboard reporting", "D) Model optimization"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What is the primary goal of data cleansing (or data scrubbing)  ?",
-                options: ["A) Encrypting sensitive passwords", "B) Dealing with inconsistent data and missing values  ", "C) Generating random training samples", "D) Converting structured data into unstructured text"],
+                q: "What is the primary goal of data cleansing (or data scrubbing)?",
+                options: ["A) Encrypting sensitive passwords", "B) Dealing with inconsistent data and missing values", "C) Generating random training samples", "D) Converting structured data into unstructured text"],
                 correct: 1,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What does data masking accomplish in big data pipelines  ?",
-                options: ["A) Conceals original data with false/random data to preserve confidentiality during analysis  ", "B) Deletes missing records automatically", "C) Speeds up CPU rendering", "D) Compresses video files"],
+                q: "What does data masking accomplish in big data pipelines?",
+                options: ["A) Conceals original data with false/random data to preserve confidentiality during analysis", "B) Deletes missing records automatically", "C) Speeds up CPU rendering", "D) Compresses video files"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What time horizon does Business Intelligence (BI) primarily focus on : 3, 4]?",
-                options: ["A) The future and predictive forecasting : 3, 4]", "B) The past and historical performance reporting : 3, 4]", "C) Real-time generative AI synthesis", "D) Theoretical mathematics"],
+                q: "What time horizon does Business Intelligence (BI) primarily focus on?",
+                options: ["A) The future and predictive forecasting", "B) The past and historical performance reporting", "C) Real-time generative AI synthesis", "D) Theoretical mathematics"],
                 correct: 1,
-                source: "Introduction to Data Science  "
+                source: "Introduction to Data Science"
             },
             {
-                q: "What is the distinction between a measure and a metric  ?",
-                options: ["A) Measures are single records; metrics have business meaning attached  ", "B) Metrics are raw facts; measures are KPIs", "C) Measures are qualitative; metrics are nominal", "D) There is no difference"],
+                q: "What is the distinction between a measure and a metric?",
+                options: ["A) Measures are single records; metrics have business meaning attached", "B) Metrics are raw facts; measures are KPIs", "C) Measures are qualitative; metrics are nominal", "D) There is no difference"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "In linear regression (Y = B * X), what does the regression line represent  ?",
-                options: ["A) The line that connects the highest and lowest points", "B) The straight line that sits as close as possible to all observations at once  ", "C) An S-curve for binary probabilities", "D) A cluster boundary"],
+                q: "In linear regression (Y = B * X), what does the regression line represent?",
+                options: ["A) The line that connects the highest and lowest points", "B) The straight line that sits as close as possible to all observations at once", "C) An S-curve for binary probabilities", "D) A cluster boundary"],
                 correct: 1,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What is the key structural difference between cluster analysis and factor analysis  ?",
-                options: ["A) Clustering groups observations together; factor analysis groups explanatory variables together  ", "B) Clustering handles text; factor analysis handles audio", "C) Clustering is supervised; factor analysis is reinforcement", "D) They are identical techniques"],
+                q: "What is the key structural difference between cluster analysis and factor analysis?",
+                options: ["A) Clustering groups observations together; factor analysis groups explanatory variables together", "B) Clustering handles text; factor analysis handles audio", "C) Clustering is supervised; factor analysis is reinforcement", "D) They are identical techniques"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What are the four core ingredients of every machine learning setup  ?",
-                options: ["A) CPU, RAM, GPU, Storage", "B) Data, Model, Objective function, Optimization algorithm  ", "C) Tables, Schemas, ERDs, SQL", "D) Mean, Median, Variance, Skewness"],
+                q: "What are the four core ingredients of every machine learning setup?",
+                options: ["A) CPU, RAM, GPU, Storage", "B) Data, Model, Objective function, Optimization algorithm", "C) Tables, Schemas, ERDs, SQL", "D) Mean, Median, Variance, Skewness"],
                 correct: 1,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What distinguishes supervised learning from unsupervised learning  ?",
-                options: ["A) Supervised uses labeled data with known targets; unsupervised uses unlabelled data to find structure  ", "B) Supervised is faster than unsupervised", "C) Unsupervised requires human teachers for every shot", "D) Supervised only works on images"],
+                q: "What distinguishes supervised learning from unsupervised learning?",
+                options: ["A) Supervised uses labeled data with known targets; unsupervised uses unlabelled data to find structure", "B) Supervised is faster than unsupervised", "C) Unsupervised requires human teachers for every shot", "D) Supervised only works on images"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What drives reinforcement learning instead of minimizing an error  ?",
-                options: ["A) A reward system / maximizing a reward  ", "B) Fixed rulebooks", "C) Categorical class labels", "D) Random number generators"],
+                q: "What drives reinforcement learning instead of minimizing an error?",
+                options: ["A) A reward system / maximizing a reward", "B) Fixed rulebooks", "C) Categorical class labels", "D) Random number generators"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What is the core underlying mechanism of large language models like ChatGPT and Gemini  ?",
-                options: ["A) Manual SQL queries", "B) Predicting the next/missing word in a sequence using self-attention transformers  ", "C) Sorting numerical tables", "D) Calculating standard error"],
+                q: "What is the core underlying mechanism of large language models like ChatGPT and Gemini?",
+                options: ["A) Manual SQL queries", "B) Predicting the next/missing word in a sequence using self-attention transformers", "C) Sorting numerical tables", "D) Calculating standard error"],
                 correct: 1,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What characterizes a discrete uniform distribution  ?",
-                options: ["A) All outcomes have equal probability  ", "B) Outcomes are continuous", "C) Mean and variance are uninterpretable and have no predictive power  ", "D) Both A and C  "],
-                correct: 3,
-                source: "Probability Distributions  "
+                q: "What characterizes a discrete uniform distribution?",
+                options: ["A) All outcomes have equal probability", "B) Outcomes are continuous", "C) Mean and variance are uninterpretable", "D) Both A and C"],
+                correct: 0,
+                source: "Probability Distributions"
             },
             {
-                q: "What is the variance of a Bernoulli distribution with success probability p  ?",
-                options: ["A) p", "B) p(1 - p)  ", "C) np(1 - p)", "D) lambda"],
+                q: "What is the variance of a Bernoulli distribution with success probability p?",
+                options: ["A) p", "B) p(1 - p)", "C) np(1 - p)", "D) lambda"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "Which distribution models the frequency of an event occurring over a fixed interval of time or distance  ?",
-                options: ["A) Binomial", "B) Poisson  ", "C) Uniform", "D) Exponential"],
+                q: "Which distribution models the frequency of an event occurring over a fixed interval of time or distance?",
+                options: ["A) Binomial", "B) Poisson", "C) Uniform", "D) Exponential"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "Why are probabilities of exact individual values equal to zero in continuous distributions  ?",
-                options: ["A) Because continuous data is fake", "B) Because the sample space is infinite, making the denominator infinitely large  ", "C) Because the mean is always zero", "D) Because discrete data replaces them"],
+                q: "Why are probabilities of exact individual values equal to zero in continuous distributions?",
+                options: ["A) Because continuous data is fake", "B) Because the sample space is infinite, making the denominator infinitely large", "C) Because the mean is always zero", "D) Because discrete data replaces them"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What does standardizing a normal distribution achieve  ?",
-                options: ["A) Rescales it to mean 0 and standard deviation 1 (Z distribution)  ", "B) Doubles its variance", "C) Eliminates all outliers", "D) Converts it to Poisson"],
+                q: "What does standardizing a normal distribution achieve?",
+                options: ["A) Rescales it to mean 0 and standard deviation 1 (Z distribution)", "B) Doubles its variance", "C) Eliminates all outliers", "D) Converts it to Poisson"],
                 correct: 0,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "When should you use Student's T distribution instead of the normal distribution  ?",
-                options: ["A) When sample size is large (n >= 30)", "B) When sample size is small (n < 30)  ", "C) When data is categorical", "D) When variance is zero"],
+                q: "When should you use Student's T distribution instead of the normal distribution?",
+                options: ["A) When sample size is large (n >= 30)", "B) When sample size is small (n < 30)", "C) When data is categorical", "D) When variance is zero"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What shape does a chi-squared distribution exhibit  ?",
-                options: ["A) Perfectly symmetric bell curve", "B) Asymmetric, non-negative, highly skewed to the right  ", "C) Flat uniform rectangle", "D) S-curve"],
+                q: "What shape does a chi-squared distribution exhibit?",
+                options: ["A) Perfectly symmetric bell curve", "B) Asymmetric, non-negative, highly skewed to the right", "C) Flat uniform rectangle", "D) S-curve"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What shape characterizes an exponential distribution  ?",
-                options: ["A) Starts very high, drops sharply early on, then plateaus  ", "B) Bell-shaped with fatter tails", "C) S-shaped cumulative curve", "D) Two distinct peaks"],
+                q: "What shape characterizes an exponential distribution?",
+                options: ["A) Starts very high, drops sharply early on, then plateaus", "B) Bell-shaped with fatter tails", "C) S-shaped cumulative curve", "D) Two distinct peaks"],
                 correct: 0,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What is a very common transformation applied to exponentially-shaped data to make it normal  ?",
-                options: ["A) Squaring every value", "B) Taking the natural logarithm  ", "C) Dividing by lambda", "D) Finding the factorial"],
+                q: "What is a very common transformation applied to exponentially-shaped data to make it normal?",
+                options: ["A) Squaring every value", "B) Taking the natural logarithm", "C) Dividing by lambda", "D) Finding the factorial"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What does the S-shaped cumulative distribution function curve characterize  ?",
-                options: ["A) Logistic distribution  ", "B) Poisson distribution", "C) Uniform distribution", "D) Chi-squared distribution"],
+                q: "What does the S-shaped cumulative distribution function curve characterize?",
+                options: ["A) Logistic distribution", "B) Poisson distribution", "C) Uniform distribution", "D) Chi-squared distribution"],
                 correct: 0,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What distinguishes data analysis from data analytics  ?",
-                options: ["A) Analysis examines past events; analytics explores potential future events/predictions  ", "B) Analysis uses Python; analytics uses SQL", "C) Analysis is quantitative; analytics is qualitative", "D) There is no difference"],
+                q: "What distinguishes data analysis from data analytics?",
+                options: ["A) Analysis examines past events; analytics explores potential future events/predictions", "B) Analysis uses Python; analytics uses SQL", "C) Analysis is quantitative; analytics is qualitative", "D) There is no difference"],
                 correct: 0,
-                source: "Introduction to Data Science  "
+                source: "Introduction to Data Science"
             },
             {
-                q: "What is nominal data  ?",
-                options: ["A) Qualitative categories with no inherent order  ", "B) Quantitative counts", "C) Continuous measurements", "D) Ranked ratings"],
+                q: "What is nominal data?",
+                options: ["A) Qualitative categories with no inherent order", "B) Quantitative counts", "C) Continuous measurements", "D) Ranked ratings"],
                 correct: 0,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What is ordinal data  ?",
-                options: ["A) Categories with a strict, meaningful order  ", "B) Numbers without a true zero", "C) Unordered car brands", "D) Continuous weights"],
+                q: "What is ordinal data?",
+                options: ["A) Categories with a strict, meaningful order", "B) Numbers without a true zero", "C) Unordered car brands", "D) Continuous weights"],
                 correct: 0,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What is interval data  ?",
-                options: ["A) Numbers with a true zero", "B) Quantitative numbers without a true zero point (e.g., Celsius)  ", "C) Categorical labels", "D) Unordered text"],
+                q: "What is interval data?",
+                options: ["A) Numbers with a true zero", "B) Quantitative numbers without a true zero point (e.g., Celsius)", "C) Categorical labels", "D) Unordered text"],
                 correct: 1,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What does a Pareto diagram combine  ?",
-                options: ["A) A scatter plot and a regression line", "B) A bar chart sorted by descending frequency and a cumulative relative frequency curve  ", "C) A pie chart and a histogram", "D) Two box plots"],
+                q: "What does a Pareto diagram combine?",
+                options: ["A) A scatter plot and a regression line", "B) A bar chart sorted by descending frequency and a cumulative relative frequency curve", "C) A pie chart and a histogram", "D) Two box plots"],
                 correct: 1,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What does correlation measure  ?",
-                options: ["A) The strength and direction of linear relationship between variables, bounded between -1 and +1  ", "B) Absolute causation", "C) Total data volume", "D) Sample variance"],
+                q: "What does correlation measure?",
+                options: ["A) The strength and direction of linear relationship between variables, bounded between -1 and +1", "B) Absolute causation", "C) Total data volume", "D) Sample variance"],
                 correct: 0,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What are the original three Vs of Big Data : 3, 4]?",
-                options: ["A) Value, Visibility, Validity", "B) Volume, Variety, Velocity : 3, 4]", "C) Variance, Vector, Vision", "D) Verification, Vetting, Veracity"],
+                q: "What are the original three Vs of Big Data?",
+                options: ["A) Value, Visibility, Validity", "B) Volume, Variety, Velocity", "C) Variance, Vector, Vision", "D) Verification, Vetting, Veracity"],
                 correct: 1,
-                source: "Introduction to Data Science  "
+                source: "Introduction to Data Science"
             },
             {
-                q: "What is semi-structured data : 3, 4]?",
-                options: ["A) Data with tags or markers but no fixed table schema (e.g., JSON, XML) : 3, 4]", "B) Tidy rows and columns", "C) Uncompressed video streams", "D) Plain text files"],
+                q: "What is semi-structured data?",
+                options: ["A) Data with tags or markers but no fixed table schema (e.g., JSON, XML)", "B) Tidy rows and columns", "C) Uncompressed video streams", "D) Plain text files"],
                 correct: 0,
-                source: "Introduction to Data Science  "
+                source: "Introduction to Data Science"
             },
             {
-                q: "What is the role of an objective function in machine learning  ?",
-                options: ["A) To measure how wrong the model currently is / compute the error  ", "B) To compile Java code", "C) To clean missing values", "D) To create dashboard charts"],
+                q: "What is the role of an objective function in machine learning?",
+                options: ["A) To measure how wrong the model currently is / compute the error", "B) To compile Java code", "C) To clean missing values", "D) To create dashboard charts"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What is logistic regression used for  ?",
-                options: ["A) Predicting continuous house prices", "B) Modeling binary outcomes (0 or 1) using an S-curve  ", "C) Finding clusters in unlabelled data", "D) Reducing 100 variables into 10 factors"],
+                q: "What is logistic regression used for?",
+                options: ["A) Predicting continuous house prices", "B) Modeling binary outcomes (0 or 1) using an S-curve", "C) Finding clusters in unlabelled data", "D) Reducing 100 variables into 10 factors"],
                 correct: 1,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What does the law of total probability compute : 1, 6]?",
-                options: ["A) The overall probability of an event by summing conditional probabilities across partitions : 1, 6]", "B) The sample variance", "C) The exact median of a skewed dataset", "D) The regression slope"],
+                q: "What does the law of total probability compute?",
+                options: ["A) The overall probability of an event by summing conditional probabilities across partitions", "B) The sample variance", "C) The exact median of a skewed dataset", "D) The regression slope"],
                 correct: 0,
-                source: "Sets, Events & Bayesian Inference  "
+                source: "Sets, Events & Bayesian Inference"
             },
             {
-                q: "What is an estimator  ?",
-                options: ["A) A rule or formula for approximating a population parameter from sample data  ", "B) A software engineer", "C) A type of chart", "D) A data cleansing tool"],
+                q: "What is an estimator?",
+                options: ["A) A rule or formula for approximating a population parameter from sample data", "B) A software engineer", "C) A type of chart", "D) A data cleansing tool"],
                 correct: 0,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What two properties define an ideal estimator  ?",
-                options: ["A) Fast and colorful", "B) Unbiased and efficient  ", "C) Discrete and continuous", "D) Linear and symmetric"],
+                q: "What two properties define an ideal estimator?",
+                options: ["A) Fast and colorful", "B) Unbiased and efficient", "C) Discrete and continuous", "D) Linear and symmetric"],
                 correct: 1,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "Why is data shuffling important before extracting samples  ?",
-                options: ["A) It prevents ordering bias so any consecutive subset is random and representative  ", "B) It increases file size", "C) It changes categorical data into numerical data", "D) It removes outliers"],
+                q: "Why is data shuffling important before extracting samples?",
+                options: ["A) It prevents ordering bias so any consecutive subset is random and representative", "B) It increases file size", "C) It changes categorical data into numerical data", "D) It removes outliers"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What is a KPI (Key Performance Indicator)  ?",
-                options: ["A) Any metric that can be measured", "B) A metric tied tightly to main business objectives  ", "C) A database error code", "D) A regression coefficient"],
+                q: "What is a KPI (Key Performance Indicator)?",
+                options: ["A) Any metric that can be measured", "B) A metric tied tightly to main business objectives", "C) A database error code", "D) A regression coefficient"],
                 correct: 1,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What does Bayes' theorem calculate : 1, 6]?",
-                options: ["A) The posterior probability of a hypothesis given new evidence : 1, 6]", "B) The sample standard deviation", "C) The probability of a complement", "D) The row count of a SQL table"],
+                q: "What does Bayes' theorem calculate?",
+                options: ["A) The posterior probability of a hypothesis given new evidence", "B) The sample standard deviation", "C) The probability of a complement", "D) The row count of a SQL table"],
                 correct: 0,
-                source: "Sets, Events & Bayesian Inference  "
+                source: "Sets, Events & Bayesian Inference"
             },
             {
-                q: "What single parameter controls the Poisson distribution : 1, 5]?",
-                options: ["A) p (probability of success)", "B) lambda (expected average rate) : 1, 5]", "C) k (degrees of freedom)", "D) z (standard score)"],
+                q: "What single parameter controls the Poisson distribution?",
+                options: ["A) p (probability of success)", "B) lambda (expected average rate)", "C) k (degrees of freedom)", "D) z (standard score)"],
                 correct: 1,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What are the parameters of a binomial distribution : 1, 5]?",
-                options: ["A) Number of trials n and probability of success p : 1, 5]", "B) Mean and variance", "C) Lambda and e", "D) Alpha and beta"],
+                q: "What are the parameters of a binomial distribution?",
+                options: ["A) Number of trials n and probability of success p", "B) Mean and variance", "C) Lambda and e", "D) Alpha and beta"],
                 correct: 0,
-                source: "Probability Distributions  "
+                source: "Probability Distributions"
             },
             {
-                q: "What does A/B testing involve  ?",
-                options: ["A) Comparing two versions of a variable with equal-sized groups to see which performs better  ", "B) Testing software on two different computers", "C) Calculating two different standard errors", "D) Merging two databases"],
+                q: "What does A/B testing involve?",
+                options: ["A) Comparing two versions of a variable with equal-sized groups to see which performs better", "B) Testing software on two different computers", "C) Calculating two different standard errors", "D) Merging two databases"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
             },
             {
-                q: "What determines the direction of skewness in a distribution  ?",
-                options: ["A) The position of the mode", "B) The direction of the tail / outliers  ", "C) The sample size n", "D) The standard error"],
+                q: "What determines the direction of skewness in a distribution?",
+                options: ["A) The position of the mode", "B) The direction of the tail / outliers", "C) The sample size n", "D) The standard error"],
                 correct: 1,
-                source: "Statistics Fundamentals  "
+                source: "Statistics Fundamentals"
             },
             {
-                q: "What is self-supervised learning  ?",
-                options: ["A) A hybrid approach where unlabelled data generates its own labels for training  ", "B) Learning without a computer", "C) Reinforcement learning with chocolate rewards", "D) Manual data entry"],
+                q: "What is self-supervised learning?",
+                options: ["A) A hybrid approach where unlabelled data generates its own labels for training", "B) Learning without a computer", "C) Reinforcement learning with chocolate rewards", "D) Manual data entry"],
                 correct: 0,
-                source: "Traditional Data Techniques  "
+                source: "Traditional Data Techniques"
+            },
+            {
+                q: "What is data wrangling?",
+                options: ["A) The process of cleaning, structuring, and enriching raw data into a usable format", "B) Deleting database logs", "C) Compiling C++ binaries", "D) Generating random passwords"],
+                correct: 0,
+                source: "Traditional Data Techniques"
+            },
+            {
+                q: "What is feature scaling in machine learning?",
+                options: ["A) Normalizing or standardizing independent variables so they contribute equally to the model", "B) Increasing image resolution", "C) Adding extra columns to a spreadsheet", "D) Renaming table headers"],
+                correct: 0,
+                source: "Traditional Data Techniques"
+            },
+            {
+                q: "What is cross-validation used for?",
+                options: ["A) Assessing how well a predictive model generalizes to an independent dataset", "B) Checking SQL syntax errors", "C) Translating languages", "D) Merging duplicate tables"],
+                correct: 0,
+                source: "Traditional Data Techniques"
+            },
+            {
+                q: "What does an ROC curve plot?",
+                options: ["A) True Positive Rate against False Positive Rate at various classification thresholds", "B) Mean against variance", "C) Sample size against standard error", "D) Revenue against time"],
+                correct: 0,
+                source: "Traditional Data Techniques"
+            },
+            {
+                q: "What is multicollinearity?",
+                options: ["A) When independent variables in a regression model are highly correlated with each other", "B) When data has multiple zeroes", "C) When tables have too many rows", "D) When a server crashes"],
+                correct: 0,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "What is the interquartile range (IQR)?",
+                options: ["A) The difference between the 75th percentile (Q3) and 25th percentile (Q1)", "B) The average of all numbers", "C) The maximum minus minimum", "D) The standard deviation divided by mean"],
+                correct: 0,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "What is a p-value in hypothesis testing?",
+                options: ["A) The probability of obtaining test results at least as extreme as the results actually observed, under the null hypothesis", "B) The population parameter", "C) The prediction accuracy", "D) The percentage of missing data"],
+                correct: 0,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "What is a Type I error?",
+                options: ["A) Rejecting a true null hypothesis (False Positive)", "B) Failing to reject a false null hypothesis (False Negative)", "C) Coding syntax error", "D) Server timeout error"],
+                correct: 0,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "What is a Type II error?",
+                options: ["A) Failing to reject a false null hypothesis (False Negative)", "B) Rejecting a true null hypothesis (False Positive)", "C) Database corruption", "D) Missing input field"],
+                correct: 0,
+                source: "Statistics Fundamentals"
             }
         ];
 
@@ -1325,7 +1506,7 @@
                         options: formattedOpts,
                         correct: newCorrectIdx,
                         source: item.source,
-                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> ${item.source})`
+                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> (Source: ${item.source})`
                     };
                 });
 
