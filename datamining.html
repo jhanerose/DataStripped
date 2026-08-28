@@ -428,6 +428,16 @@
             color: #fff;
         }
 
+        /* Centered solution block inside explanations */
+        .centered-solution-box {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px dashed rgba(255, 140, 66, 0.4);
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 6px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-5px); }
             to { opacity: 1; transform: translateY(0); }
@@ -667,7 +677,7 @@
             }
         }
 
-        // Part 1: Fully dynamic randomized computational templates with randomized sentences and domain applications
+        // Part 1: Fully dynamic multi-step computational guides featuring explicit formulas in hints and structured Given / Solution / Conclusion breakdowns
         const part1Templates = [
             {
                 title: "Sample Variance and Standard Deviation",
@@ -709,318 +719,43 @@
                             {
                                 type: "mc",
                                 label: "a) Compute the Sample Variance (s&sup2;).",
-                                hint: "Use formula: <span class='formula-code'>s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span> where <span class='formula-code'>n = 5</span>.",
+                                hint: "Sample Variance <span class='formula-code'>s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span>. Divide total squared deviations by <span class='formula-code'>n - 1 = 4</span>.",
                                 options: varOptions,
                                 correctIndex: correctVarIndex,
-                                explanation: `<span class='formula-code'>&Sigma;(x - ${mean})&sup2; = ${sumSq}</span>. Divided by <span class='formula-code'>n - 1 = 4</span> $\rightarrow$ <span class='formula-code'>${sumSq} / 4 = ${variance}</span>.`
+                                explanation: `
+                                    <strong>Given:</strong> Data points <span class='formula-code'>x = [${rawData.join(', ')}]</span>, Mean <span class='formula-code'>x&#772; = ${mean}</span>, Sample size <span class='formula-code'>n = 5</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span><br>
+                                        <span class='formula-code'>s&sup2; = ${sumSq} / (5 - 1) = ${sumSq} / 4</span><br>
+                                        <strong>Final Answer: Variance = ${variance}</strong>
+                                    </div>
+                                    <strong>Conclusion:</strong> The computed sample variance is <strong>${variance}</strong>, quantifying the spread of trial metrics around the mean.
+                                `
                             },
                             {
                                 type: "mc",
                                 label: "b) Compute the Sample Standard Deviation (s).",
-                                hint: "Standard deviation is the positive square root of the sample variance.",
+                                hint: "Sample Standard Deviation <span class='formula-code'>s = &radic;s&sup2;</span>.",
                                 options: formattedSdOpts,
                                 correctIndex: correctSdIndex,
-                                explanation: `<span class='formula-code'>s = &radic;${variance} = ${sd}</span>.`
+                                explanation: `
+                                    <strong>Given:</strong> Computed Sample Variance <span class='formula-code'>s&sup2; = ${variance}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>s = &radic;(s&sup2;)</span><br>
+                                        <span class='formula-code'>s = &radic;(${variance})</span><br>
+                                        <strong>Final Answer: s = ${sd}</strong>
+                                    </div>
+                                    <strong>Conclusion:</strong> Taking the square root yields a sample standard deviation of <strong>${sd}</strong> in original data units.
+                                `
                             }
                         ]
                     };
                 }
             },
             {
-                title: "Coefficient of Variation (CV)",
-                generate: () => {
-                    const mean = [4, 5, 8, 10, 12][Math.floor(Math.random() * 5)];
-                    const sd = [1.2, 1.5, 2.0, 2.5, 3.0][Math.floor(Math.random() * 5)];
-                    const cv = (sd / mean).toFixed(3);
-                    const cvFormatted = (sd / mean).toFixed(2);
-
-                    const contexts = [
-                        `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>.`,
-                        `In your multiplayer game matchmaking queue, wait time has a <span class='formula-code'>Mean = ${mean} seconds</span> and a <span class='formula-code'>Std Dev = ${sd} seconds</span>.`,
-                        `In your API gateway telemetry, request transaction volume has a <span class='formula-code'>Mean = ${mean} MB</span> and a <span class='formula-code'>Std Dev = ${sd} MB</span>.`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "input",
-                                label: "Calculate the Coefficient of Variation (CV) as a decimal (round to 2-3 decimal places).",
-                                hint: "CV is the ratio of Standard Deviation to Mean (<span class='formula-code'>Std Dev / Mean</span>).",
-                                acceptAnswers: [cv, cvFormatted, String(Number(cv))],
-                                explanation: `<span class='formula-code'>CV = ${sd} / ${mean} = ${cv}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Standard Error (SE)",
-                generate: () => {
-                    const sigma = [60, 90, 120, 150, 180][Math.floor(Math.random() * 5)];
-                    const n = [100, 144, 225, 400][Math.floor(Math.random() * 4)];
-                    const se = (sigma / Math.sqrt(n)).toFixed(2);
-                    const seVal = parseFloat(se);
-
-                    const contexts = [
-                        `Your backend API has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span>. You collect a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} requests</span>.`,
-                        `Your e-commerce product recommendation algorithm has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span> in render times across a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} user sessions</span>.`,
-                        `Your server cluster network latency has a population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>${sigma} ms</span> over a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>${n} packet checks</span>.`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    let wrong1 = (seVal + 1.5).toFixed(2);
-                    let wrong2 = Math.max(0.2, seVal - 1.2).toFixed(2);
-                    let wrong3 = (seVal * 2).toFixed(2);
-                    let opts = [seVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
-                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(2)}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${seVal.toFixed(2)}`));
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "Calculate the Standard Error (SE) of the mean.",
-                                hint: "Standard Error formula: <span class='formula-code'>SE = &sigma; / &radic;n</span>.",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>SE = ${sigma} / &radic;${n} = ${sigma} / ${Math.sqrt(n)} = ${se}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Sample Covariance",
-                generate: () => {
-                    const xPools = [
-                        [2, 4, 6],
-                        [1, 3, 5],
-                        [4, 6, 8]
-                    ];
-                    const xVals = xPools[Math.floor(Math.random() * xPools.length)];
-                    const xMean = xVals[1];
-                    const slope = [2, 3][Math.floor(Math.random() * 2)];
-                    const yBase = [10, 15, 20][Math.floor(Math.random() * 3)];
-                    const yVals = xVals.map(x => yBase + slope * (x - xMean));
-                    const yMean = yBase;
-                    let sumProd = 0;
-                    for(let i=0; i<3; i++) {
-                        sumProd += (xVals[i] - xMean) * (yVals[i] - yMean);
-                    }
-                    const cov = (sumProd / 2).toFixed(1);
-                    const covVal = parseFloat(cov);
-
-                    const contexts = [
-                        `You analyze player Level (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and Inventory Slots (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) for 3 players. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`,
-                        `You analyze server CPU Utilization percentage (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and active user Connection Count in hundreds (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) over 3 intervals. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`,
-                        `You evaluate e-commerce customer browsing duration in minutes (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and total cart checkout value in dollars (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) for 3 buyers. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    let wrong1 = (covVal + 10).toFixed(1);
-                    let wrong2 = Math.max(0, covVal - 15).toFixed(1);
-                    let wrong3 = (covVal * 2).toFixed(1);
-                    let opts = [covVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
-                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${covVal}`));
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "Compute the sample covariance, cov(x,y).",
-                                hint: "Formula: <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span> with <span class='formula-code'>n = 3</span>.",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>&Sigma;(x - x&#772;)(y - y&#772;) = ${sumProd}</span>. Divided by <span class='formula-code'>n - 1 = 2</span> $\rightarrow$ <span class='formula-code'>${sumProd} / 2 = ${cov}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Additive Law of Probability",
-                generate: () => {
-                    const pA = [0.50, 0.55, 0.60, 0.65, 0.70][Math.floor(Math.random() * 5)];
-                    const pB = [0.35, 0.40, 0.45, 0.50][Math.floor(Math.random() * 4)];
-                    const pUnion = [0.75, 0.80, 0.85][Math.floor(Math.random() * 3)];
-                    const pInter = (pA + pB - pUnion).toFixed(2);
-                    const interVal = parseFloat(pInter);
-
-                    const contexts = [
-                        `In your web portal telemetry, <span class='formula-code'>${(pA*100).toFixed(0)}%</span> view dashboard modules (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${(pB*100).toFixed(0)}%</span> view reports (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${(pUnion*100).toFixed(0)}%</span> view at least one (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`,
-                        `In your mobile application analytics, <span class='formula-code'>${(pA*100).toFixed(0)}%</span> of users open the settings menu (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${(pB*100).toFixed(0)}%</span> open the profile screen (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${(pUnion*100).toFixed(0)}%</span> open at least one of these screens (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    let wrong1 = (interVal + 0.15).toFixed(2);
-                    let wrong2 = Math.max(0.05, interVal - 0.10).toFixed(2);
-                    let wrong3 = (interVal + 0.25).toFixed(2);
-                    let opts = [interVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
-                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(2)}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${interVal.toFixed(2)}`));
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "What proportion of users trigger BOTH events? P(A &cap; B)",
-                                hint: "Additive Law: <span class='formula-code'>P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span>.",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>${pUnion} = ${pA} + ${pB} - P(A &cap; B) &rArr; P(A &cap; B) = ${pInter}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Conditional Probability",
-                generate: () => {
-                    const pB = [0.40, 0.50, 0.60][Math.floor(Math.random() * 3)];
-                    const pInter = [0.15, 0.20, 0.25][Math.floor(Math.random() * 3)];
-                    const pCond = (pInter / pB).toFixed(2);
-                    const pCondVal = parseFloat(pCond);
-
-                    const contexts = [
-                        `In your telemetry data, the probability of visiting the main reports page is <span class='formula-code'>P(B) = ${pB}</span>, and the joint probability of visiting both the dashboard and reports is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`,
-                        `In your user session logs, the probability of encountering a cached API response is <span class='formula-code'>P(B) = ${pB}</span>, and the joint probability of encountering both a cache hit and a successful database write is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    let wrong1 = (pCondVal + 0.15).toFixed(2);
-                    let wrong2 = Math.max(0.05, pCondVal - 0.10).toFixed(2);
-                    let wrong3 = (pCondVal + 0.30).toFixed(2);
-                    let opts = [pCondVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
-                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(2)}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${pCondVal.toFixed(2)}`));
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "Given event B occurs, what is the probability that event A also occurs? Compute P(A|B).",
-                                hint: "Conditional Probability: <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span>.",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>P(A|B) = ${pInter} / ${pB} = ${pCond}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Law of Total Probability",
-                generate: () => {
-                    const pM = [0.30, 0.40, 0.50][Math.floor(Math.random() * 3)];
-                    const pNotM = (1 - pM).toFixed(2);
-                    const pKM = [0.70, 0.75, 0.80][Math.floor(Math.random() * 3)];
-                    const pKNotM = [0.10, 0.15, 0.20][Math.floor(Math.random() * 3)];
-                    const pTotal = ((pKM * pM) + (pKNotM * pNotM)).toFixed(3);
-                    const pTotalVal = parseFloat(pTotal);
-
-                    const contexts = [
-                        `You parse voice commands for an assistant. <span class='formula-code'>${(pM*100).toFixed(0)}%</span> of commands are media playback (<span class='formula-code'>P(M)=${pM}</span>). Keyword "play" appears in <span class='formula-code'>${(pKM*100).toFixed(0)}%</span> of media commands (<span class='formula-code'>P(K|M)=${pKM}</span>) and in <span class='formula-code'>${(pKNotM*100).toFixed(0)}%</span> of non-media commands (<span class='formula-code'>P(K|not M)=${pKNotM}</span>).`,
-                        `You analyze user authentication requests. <span class='formula-code'>${(pM*100).toFixed(0)}%</span> of logins originate from trusted mobile devices (<span class='formula-code'>P(M)=${pM}</span>). Two-factor authentication is triggered in <span class='formula-code'>${(pKM*100).toFixed(0)}%</span> of trusted logins (<span class='formula-code'>P(K|M)=${pKM}</span>) and in <span class='formula-code'>${(pKNotM*100).toFixed(0)}%</span> of untrusted logins (<span class='formula-code'>P(K|not M)=${pKNotM}</span>).`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    let wrong1 = (pTotalVal + 0.10).toFixed(3);
-                    let wrong2 = Math.max(0.05, pTotalVal - 0.08).toFixed(3);
-                    let wrong3 = (pTotalVal + 0.20).toFixed(3);
-                    let opts = [pTotalVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
-                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(3)}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${pTotalVal.toFixed(3)}`));
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "Compute overall probability that the target condition occurs, P(K).",
-                                hint: "Law of Total Probability: <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>P(K) = (${pKM} &times; ${pM}) + (${pKNotM} &times; ${pNotM}) = ${pTotal}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Bayes Inference",
-                generate: () => {
-                    const pM = 0.40;
-                    const pKM = 0.75;
-                    const pK = 0.36;
-                    const pMGivenK = ((pKM * pM) / pK).toFixed(3);
-                    const pMGivenK2 = ((pKM * pM) / pK).toFixed(2);
-
-                    const contexts = [
-                        `Using assistant voice command telemetry where <span class='formula-code'>P(M)=${pM}</span>, <span class='formula-code'>P(K|M)=${pKM}</span>, and overall keyword probability <span class='formula-code'>P(K)=${pK}</span>.`,
-                        `Using security gateway telemetry where trusted mobile login probability is <span class='formula-code'>P(M)=${pM}</span>, conditional 2FA trigger probability is <span class='formula-code'>P(K|M)=${pKM}</span>, and overall 2FA trigger probability is <span class='formula-code'>P(K)=${pK}</span>.`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "input",
-                                label: "If the target condition is detected, what is P(M|K)? (Type rounded decimal to 3 places)",
-                                hint: "Bayes' theorem: <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
-                                acceptAnswers: [pMGivenK, pMGivenK2, String(Number(pMGivenK))],
-                                explanation: `<span class='formula-code'>P(M|K) = (${pKM} &times; ${pM}) / ${pK} &approx; ${pMGivenK}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Poisson Distribution",
-                generate: () => {
-                    const lam = [1, 2, 3][Math.floor(Math.random() * 3)];
-                    const y = 1;
-                    const prob = ((Math.pow(lam, y) * Math.exp(-lam)) / 1).toFixed(3);
-                    const probVal = parseFloat(prob);
-
-                    const contexts = [
-                        `Your cloud server receives an average of <span class='formula-code'>${lam} critical exceptions per hour (&lambda; = ${lam})</span>.`,
-                        `Your database cluster experiences an average of <span class='formula-code'>${lam} deadlocks per hour (&lambda; = ${lam})</span>.`,
-                        `Your e-commerce gateway encounters an average of <span class='formula-code'>${lam} timeout errors per minute (&lambda; = ${lam})</span>.`
-                    ];
-                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
-
-                    let wrong1 = (probVal + 0.12).toFixed(3);
-                    let wrong2 = Math.max(0.02, probVal - 0.09).toFixed(3);
-                    let wrong3 = (probVal + 0.25).toFixed(3);
-                    let opts = [probVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
-                    let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(3)}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${probVal.toFixed(3)}`));
-
-                    return {
-                        context: selectedContext,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: `What is the probability of receiving exactly ${y} incident in the specified interval? (e &approx; 2.718)`,
-                                hint: "Poisson formula: <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span>",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>P(${y}) = (${lam}^${y} &times; e^(-${lam})) / 1! &approx; ${prob}</span>.`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Binomial Distribution",
+                title: "Binomial Distribution & Expected Value",
                 generate: () => {
                     const n = [4, 5][Math.floor(Math.random() * 2)];
                     const p = [0.40, 0.50][Math.floor(Math.random() * 2)];
@@ -1034,26 +769,348 @@
                     ];
                     const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
 
-                    let rawOpts = [
-                        `E(X) = ${expVal}, Variance = ${varVal}`,
-                        `E(X) = ${(Number(expVal)+0.5).toFixed(2)}, Variance = ${(Number(varVal)+0.5).toFixed(2)}`,
-                        `E(X) = ${(Math.max(1, Number(expVal)-1)).toFixed(2)}, Variance = ${(Number(varVal)+1).toFixed(2)}`,
-                        `E(X) = ${expVal}, Variance = ${(Number(varVal)*1.5).toFixed(2)}`
+                    let expOpts = [
+                        `A) E(X) = ${expVal}`,
+                        `B) E(X) = ${(Number(expVal)+0.5).toFixed(2)}`,
+                        `C) E(X) = ${(Math.max(0.5, Number(expVal)-1)).toFixed(2)}`,
+                        `D) E(X) = ${(Number(expVal)+1.0).toFixed(2)}`
                     ].sort(() => Math.random() - 0.5);
+                    let correctExpIdx = expOpts.findIndex(opt => opt.includes(`E(X) = ${expVal}`));
 
-                    let formattedOpts = rawOpts.map((opt, idx) => `${String.fromCharCode(65+idx)}) ${opt}`);
-                    let correctIdx = formattedOpts.findIndex(opt => opt.includes(`E(X) = ${expVal}, Variance = ${varVal}`));
+                    let varOpts = [
+                        `A) Var = ${varVal}`,
+                        `B) Var = ${(Number(varVal)+0.5).toFixed(2)}`,
+                        `C) Var = ${(Number(varVal)*1.5).toFixed(2)}`,
+                        `D) Var = ${(Math.max(0.2, Number(varVal)-0.4)).toFixed(2)}`
+                    ].sort(() => Math.random() - 0.5);
+                    let correctVarIdx = varOpts.findIndex(opt => opt.includes(`Var = ${varVal}`));
 
                     return {
                         context: selectedContext,
                         steps: [
                             {
                                 type: "mc",
-                                label: "What is the expected number of successful outcomes E(X) and the variance &sigma;&sup2;?",
-                                hint: "Binomial formulas: <span class='formula-code'>E(X) = np</span> and <span class='formula-code'>&sigma;&sup2; = np(1-p)</span>.",
-                                options: formattedOpts,
-                                correctIndex: correctIdx,
-                                explanation: `<span class='formula-code'>E(X) = ${n} &times; ${p} = ${expVal}</span>. <span class='formula-code'>&sigma;&sup2; = ${n} &times; ${p} &times; ${(1-p).toFixed(2)} = ${varVal}</span>.`
+                                label: "a) Compute the Expected Number of Successful Outcomes E(X).",
+                                hint: "Expected Value <span class='formula-code'>E(X) = np</span>.",
+                                options: expOpts,
+                                correctIndex: correctExpIdx,
+                                explanation: `
+                                    <strong>Given:</strong> Number of trials <span class='formula-code'>n = ${n}</span>, Success probability <span class='formula-code'>p = ${p}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>E(X) = n &times; p</span><br>
+                                        <span class='formula-code'>E(X) = ${n} &times; ${p}</span><br>
+                                        <strong>Final Answer: E(X) = ${expVal}</strong>
+                                    </div>
+                                    <strong>Conclusion:</strong> The expected number of successful outcomes is <strong>${expVal}</strong>.
+                                `
+                            },
+                            {
+                                type: "mc",
+                                label: "b) Compute the Binomial Variance (&sigma;&sup2;).",
+                                hint: "Binomial Variance <span class='formula-code'>&sigma;&sup2; = np(1 - p)</span>.",
+                                options: varOpts,
+                                correctIndex: correctVarIdx,
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>n = ${n}</span>, <span class='formula-code'>p = ${p}</span>, Failure probability <span class='formula-code'>1 - p = ${(1-p).toFixed(2)}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>&sigma;&sup2; = np(1 - p)</span><br>
+                                        <span class='formula-code'>&sigma;&sup2; = ${n} &times; ${p} &times; ${(1-p).toFixed(2)}</span><br>
+                                        <strong>Final Answer: Variance = ${varVal}</strong>
+                                    </div>
+                                    <strong>Conclusion:</strong> The binomial variance is computed as <strong>${varVal}</strong>.
+                                `
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Probability Laws (Additive & Conditional)",
+                generate: () => {
+                    const pA = [0.50, 0.60, 0.70][Math.floor(Math.random() * 3)];
+                    const pB = [0.40, 0.45, 0.50][Math.floor(Math.random() * 3)];
+                    const pUnion = [0.75, 0.80, 0.85][Math.floor(Math.random() * 3)];
+                    const pInter = (pA + pB - pUnion).toFixed(2);
+                    const interVal = parseFloat(pInter);
+                    const pCond = (interVal / pB).toFixed(2);
+                    const pCondVal = parseFloat(pCond);
+
+                    const contexts = [
+                        `In your web portal telemetry, <span class='formula-code'>${(pA*100).toFixed(0)}%</span> view dashboard modules (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${(pB*100).toFixed(0)}%</span> view reports (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${(pUnion*100).toFixed(0)}%</span> view at least one (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`,
+                        `In your mobile analytics, <span class='formula-code'>${(pA*100).toFixed(0)}%</span> open settings (<span class='formula-code'>P(A)=${pA}</span>), <span class='formula-code'>${(pB*100).toFixed(0)}%</span> open profile (<span class='formula-code'>P(B)=${pB}</span>), and <span class='formula-code'>${(pUnion*100).toFixed(0)}%</span> open at least one (<span class='formula-code'>P(A &cup; B)=${pUnion}</span>).`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    let interOpts = [
+                        `A) P(A &cap; B) = ${pInter}`,
+                        `B) P(A &cap; B) = ${(interVal+0.10).toFixed(2)}`,
+                        `C) P(A &cap; B) = ${Math.max(0.05, interVal-0.10).toFixed(2)}`,
+                        `D) P(A &cap; B) = ${(interVal+0.20).toFixed(2)}`
+                    ].sort(() => Math.random() - 0.5);
+                    let correctInterIdx = interOpts.findIndex(opt => opt.includes(`${pInter}`));
+
+                    let condOpts = [
+                        `A) P(A|B) = ${pCond}`,
+                        `B) P(A|B) = ${(pCondVal+0.15).toFixed(2)}`,
+                        `C) P(A|B) = ${Math.max(0.05, pCondVal-0.12).toFixed(2)}`,
+                        `D) P(A|B) = ${(pCondVal+0.25).toFixed(2)}`
+                    ].sort(() => Math.random() - 0.5);
+                    let correctCondIdx = condOpts.findIndex(opt => opt.includes(`${pCond}`));
+
+                    return {
+                        context: selectedContext,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "a) Compute the Intersection Probability P(A &cap; B) using the Additive Law.",
+                                hint: "Additive Law <span class='formula-code'>P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span> rearranged to solve for intersection.",
+                                options: interOpts,
+                                correctIndex: correctInterIdx,
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>P(A) = ${pA}</span>, <span class='formula-code'>P(B) = ${pB}</span>, <span class='formula-code'>P(A &cup; B) = ${pUnion}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>P(A &cap; B) = P(A) + P(B) - P(A &cup; B)</span><br>
+                                        <span class='formula-code'>P(A &cap; B) = ${pA} + ${pB} - ${pUnion}</span><br>
+                                        <strong>Final Answer: P(A &cap; B) = ${pInter}</strong>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> The joint intersection probability is <strong>${pInter}</strong>.
+                                `
+                            },
+                            {
+                                type: "mc",
+                                label: "b) Compute the Conditional Probability P(A|B).",
+                                hint: "Conditional Probability <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span>.",
+                                options: condOpts,
+                                correctIndex: correctCondIdx,
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>P(A &cap; B) = ${pInter}</span>, <span class='formula-code'>P(B) = ${pB}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span><br>
+                                        <span class='formula-code'>P(A|B) = ${pInter} / ${pB}</span><br>
+                                        <strong>Final Answer: P(A|B) = ${pCond}</strong>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> The conditional probability is <strong>${pCond}</strong>.
+                                `
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Total Probability & Bayes Inference",
+                generate: () => {
+                    const pM = 0.40;
+                    const pKM = 0.75;
+                    const pKNotM = 0.10;
+                    const pNotM = 0.60;
+                    const pK = ((pKM * pM) + (pKNotM * pNotM)).toFixed(3);
+                    const pMGivenK = ((pKM * pM) / pK).toFixed(3);
+
+                    const contexts = [
+                        `You parse voice commands. <span class='formula-code'>40%</span> of commands are media (<span class='formula-code'>P(M)=0.40</span>). Keyword "play" appears in <span class='formula-code'>75%</span> of media commands (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'>10%</span> of non-media commands (<span class='formula-code'>P(K|not M)=0.10</span>).`,
+                        `You analyze user logins. <span class='formula-code'>40%</span> originate from mobile devices (<span class='formula-code'>P(M)=0.40</span>). 2FA triggers in <span class='formula-code'>75%</span> of mobile logins (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'><span>10%</span> of non-mobile logins (<span class='formula-code'>P(K|not M)=0.10</span>).`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    return {
+                        context: selectedContext,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "a) Compute the Overall Probability P(K) using the Law of Total Probability.",
+                                hint: "Law of Total Probability <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
+                                options: ["A) 0.360", "B) 0.420", "C) 0.350", "D) 0.500"],
+                                correctIndex: 0,
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>P(M) = 0.40</span>, <span class='formula-code'>P(not M) = 0.60</span>, <span class='formula-code'>P(K|M) = 0.75</span>, <span class='formula-code'>P(K|not M) = 0.10</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>P(K) = P(K|M)&middot;P(M) + P(K|not M)&middot;P(not M)</span><br>
+                                        <span class='formula-code'>P(K) = (0.75 &times; 0.40) + (0.10 &times; 0.60) = 0.30 + 0.06</span><br>
+                                        <strong>Final Answer: P(K) = 0.360</strong>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> Total probability computed as <strong>0.360</strong>.
+                                `
+                            },
+                            {
+                                type: "input",
+                                label: "b) If the condition is detected, compute P(M|K) using Bayes' Theorem. (Type rounded decimal to 3 places)",
+                                hint: "Bayes' Theorem <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
+                                acceptAnswers: ["0.833", "0.83"],
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>P(K|M) = 0.75</span>, <span class='formula-code'>P(M) = 0.40</span>, <span class='formula-code'>P(K) = 0.360</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>P(M|K) = (P(K|M) &middot; P(M)) / P(K)</span><br>
+                                        <span class='formula-code'>P(M|K) = (0.75 &times; 0.40) / 0.360 = 0.30 / 0.360</span><br>
+                                        <strong>Final Answer: P(M|K) = 0.833</strong>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> Posterior probability computed as <strong>0.833</strong>.
+                                `
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Poisson Distribution & Rate Analysis",
+                generate: () => {
+                    const lam = [1, 2, 3][Math.floor(Math.random() * 3)];
+                    const prob = ((Math.pow(lam, 1) * Math.exp(-lam)) / 1).toFixed(3);
+                    const probVal = parseFloat(prob);
+
+                    const contexts = [
+                        `Your cloud server receives an average of <span class='formula-code'>${lam} critical exceptions per hour (&lambda; = ${lam})</span>.`,
+                        `Your database cluster experiences an average of <span class='formula-code'>${lam} deadlocks per hour (&lambda; = ${lam})</span>.`
+                    ];
+                    const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
+
+                    let probOpts = [
+                        `A) P(1) = ${prob}`,
+                        `B) P(1) = ${(probVal+0.15).toFixed(3)}`,
+                        `C) P(1) = ${Math.max(0.02, probVal-0.10).toFixed(3)}`,
+                        `D) P(1) = ${(probVal+0.30).toFixed(3)}`
+                    ].sort(() => Math.random() - 0.5);
+                    let correctProbIdx = probOpts.findIndex(opt => opt.includes(`${prob}`));
+
+                    return {
+                        context: selectedContext,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "a) Identify the Expected Rate Parameter E(y) and Variance &sigma;&sup2; for Poisson.",
+                                hint: "Poisson Expectation & Variance <span class='formula-code'>E(y) = &lambda;</span> and <span class='formula-code'>&sigma;&sup2; = &lambda;</span>.",
+                                options: [
+                                    `A) E(y) = ${lam}, Variance = ${lam}`,
+                                    `B) E(y) = ${lam}, Variance = ${lam * 2}`,
+                                    `C) E(y) = 1, Variance = ${lam}`,
+                                    `D) E(y) = ${lam}, Variance = 1`
+                                ].sort(() => Math.random() - 0.5),
+                                correctIndex: 0,
+                                explanation: `
+                                    <strong>Given:</strong> Rate parameter <span class='formula-code'>&lambda; = ${lam}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>E(y) = &lambda;  and  &sigma;&sup2; = &lambda;</span><br>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> Poisson distribution properties dictate that E(y) and variance equal <strong>${lam}</strong>.
+                                `
+                            },
+                            {
+                                type: "mc",
+                                label: "b) Compute the probability of receiving exactly 1 incident in an hour (e &approx; 2.718).",
+                                hint: "Poisson Probability Function <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span>",
+                                options: probOpts,
+                                correctIndex: correctProbIdx,
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>&lambda; = ${lam}</span>, <span class='formula-code'>y = 1</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span><br>
+                                        <span class='formula-code'>P(1) = (${lam}^1 &middot; e^(-${lam})) / 1!</span><br>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> The exact probability is <strong>${prob}</strong>.
+                                `
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Coefficient of Variation & Standard Error",
+                generate: () => {
+                    const mean = [5, 8, 10][Math.floor(Math.random() * 3)];
+                    const sd = [1.5, 2.0, 2.5][Math.floor(Math.random() * 3)];
+                    const cv = (sd / mean).toFixed(3);
+                    const cvFormatted = (sd / mean).toFixed(2);
+                    const sigma = 120;
+                    const n = 144;
+                    const se = (sigma / Math.sqrt(n)).toFixed(2);
+
+                    return {
+                        context: `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>. In addition, your API population standard deviation is <span class='formula-code'>&sigma; = ${sigma} ms</span> with a sample size <span class='formula-code'>n = ${n}</span>.`,
+                        steps: [
+                            {
+                                type: "input",
+                                label: "a) Calculate the Coefficient of Variation (CV) as a decimal.",
+                                hint: "Coefficient of Variation <span class='formula-code'>CV = Std Deviation / Mean</span>.",
+                                acceptAnswers: [cv, cvFormatted, String(Number(cv))],
+                                explanation: `
+                                    <strong>Given:</strong> Mean = ${mean}, Std Dev = ${sd}.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>CV = Std Deviation / Mean</span><br>
+                                        <span class='formula-code'>CV = ${sd} / ${mean}</span><br>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> Coefficient of variation is <strong>${cv}</strong>.
+                                `
+                            },
+                            {
+                                type: "mc",
+                                label: "b) Compute the Standard Error (SE) of the mean.",
+                                hint: "Standard Error <span class='formula-code'>SE = &sigma; / &radic;n</span>.",
+                                options: [
+                                    `A) SE = ${se}`,
+                                    `B) SE = ${(Number(se)+2.5).toFixed(2)}`,
+                                    `C) SE = ${Math.max(1, Number(se)-3.0).toFixed(2)}`,
+                                    `D) SE = ${(Number(se)*1.5).toFixed(2)}`
+                                ].sort(() => Math.random() - 0.5),
+                                correctIndex: 0,
+                                explanation: `
+                                    <strong>Given:</strong> Population standard deviation <span class='formula-code'>&sigma; = ${sigma}</span>, Sample size <span class='formula-code'>n = ${n}</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>SE = &sigma; / &radic;n</span><br>
+                                        <span class='formula-code'>SE = ${sigma} / &radic;${n}</span><br>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> Standard error of the mean is <strong>${se}</strong>.
+                                `
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Sample Covariance",
+                generate: () => {
+                    const xVals = [2, 4, 6];
+                    const yVals = [10, 15, 20];
+                    const xMean = 4;
+                    const yMean = 15;
+                    let sumProd = 0;
+                    for(let i=0; i<3; i++) {
+                        sumProd += (xVals[i] - xMean) * (yVals[i] - yMean);
+                    }
+                    const cov = (sumProd / 2).toFixed(1);
+                    const covVal = parseFloat(cov);
+
+                    return {
+                        context: `You analyze player Level (<span class='formula-code'>X</span>: ${xVals.join(', ')}) and Inventory Slots (<span class='formula-code'>Y</span>: ${yVals.join(', ')}) for 3 players. Given <span class='formula-code'>x&#772; = ${xMean}</span> and <span class='formula-code'>y&#772; = ${yMean}</span>.`,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "Compute the sample covariance, cov(x,y).",
+                                hint: "Sample Covariance <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span>.",
+                                options: [
+                                    `A) ${covVal}`,
+                                    `B) ${(covVal + 5).toFixed(1)}`,
+                                    `C) ${Math.max(0, covVal - 5).toFixed(1)}`,
+                                    `D) ${(covVal * 2).toFixed(1)}`
+                                ].sort(() => Math.random() - 0.5),
+                                correctIndex: 0,
+                                explanation: `
+                                    <strong>Given:</strong> <span class='formula-code'>X = [${xVals.join(', ')}]</span>, <span class='formula-code'>Y = [${yVals.join(', ')}]</span>, <span class='formula-code'>x&#772; = ${xMean}</span>, <span class='formula-code'>y&#772; = ${yMean}</span>, <span class='formula-code'>n = 3</span>.<br><br>
+                                    <strong>Solution:</strong>
+                                    <div class="centered-solution-box">
+                                        <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span><br>
+                                        <span class='formula-code'>cov(x,y) = ${sumProd} / (3 - 1) = ${sumProd} / 2</span><br>
+                                    </div>
+                                    <strong>Step Explanation & Conclusion:</strong> Sample covariance is <strong>${cov}</strong>.
+                                `
                             }
                         ]
                     };
@@ -1524,7 +1581,7 @@
                         options: formattedOpts,
                         correct: newCorrectIdx,
                         source: item.source,
-                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> (Source: ${item.source})`
+                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong>${item.source}`
                     };
                 });
 
@@ -1657,7 +1714,7 @@
                     let correctDisplay = stepData.type === 'mc' ? stepData.options[stepData.correctIndex] : correctValText;
                     feedbackBox.innerHTML = `
                         <strong>Incorrect.</strong> The correct answer was <strong>${correctDisplay}</strong>.<br><br>
-                        <strong>Step-by-Step Breakdown:</strong><br>
+                        <strong>Step-by-step Breakdown:</strong><br>
                         ${stepData.explanation}
                     `;
                 } else {
