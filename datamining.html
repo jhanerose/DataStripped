@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DataStripped - Data Mining</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&Sigma;</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23000000'/><text x='50' y='72' font-size='65' font-weight='bold' font-family='monospace' fill='%23ff8c42' text-anchor='middle'>DS</text></svg>">
     <style>
         /* Base Reset and Typography */
         * {
@@ -99,18 +99,22 @@
             letter-spacing: 2px;
         }
 
+        /* Upgraded DataStripped Custom DS Monogram Logo Icon */
         .logo-icon {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 35px;
-            height: 35px;
-            background: #ff8c42;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff8c42, #d15600);
             color: #000;
-            border-radius: 50%;
-            font-weight: bold;
-            font-style: normal;
+            border-radius: 10px;
+            font-weight: 900;
+            font-size: 1.1em;
+            font-family: monospace;
             margin-right: 15px;
+            box-shadow: 0 0 12px rgba(255, 140, 66, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .header-buttons {
@@ -498,12 +502,12 @@
 
     <header>
         <div class="logo">
-            <div class="logo-icon">&Sigma;</div>
+            <div class="logo-icon">DS</div>
             DATASTRIPPED
         </div>
         <div class="header-buttons">
-            <button class="btn-pill btn-generate" onclick="generateQuiz()">&#x21bb; Generate New Questions</button>
-            <button class="btn-pill" onclick="toggleModal(true)">Formulas</button>
+            <button class="btn-pill btn-generate" onclick="playClickSound(); generateQuiz()">&#x21bb; Generate New Questions</button>
+            <button class="btn-pill" onclick="playClickSound(); toggleModal(true)">Formulas</button>
         </div>
     </header>
 
@@ -533,8 +537,8 @@
             <p>Verify your math step-by-step. <strong>Solutions are revealed only if you answer incorrectly.</strong></p>
             
             <div class="mode-selector" style="margin-top: 25px;">
-                <button class="mode-tab active" id="tab-practice" onclick="setMode('practice')">Practice Mode (Instant Feedback)</button>
-                <button class="mode-tab" id="tab-exam" onclick="setMode('exam')">Exam Mode (Graded, No Hints)</button>
+                <button class="mode-tab active" id="tab-practice" onclick="playClickSound(); setMode('practice')">Foreplay Mode</button>
+                <button class="mode-tab" id="tab-exam" onclick="playClickSound(); setMode('exam')">Hardcore Mode</button>
             </div>
         </div>
 
@@ -544,7 +548,7 @@
 
     <div class="modal" id="formula-modal">
         <div class="modal-content">
-            <span class="close-modal" onclick="toggleModal(false)">&times;</span>
+            <span class="close-modal" onclick="playClickSound(); toggleModal(false)">&times;</span>
             <h3>Formula Reference Sheet</h3>
             <ul>
                 <li><strong>Expected Value (Categorical):</strong> <span class="formula-code">E(A) = P(A) &times; n</span></li>
@@ -566,7 +570,37 @@
         let timerInterval = null;
         let secondsElapsed = 0;
 
-        // Full Pool of 20 Robust Mixed Problem Sets (MCQ + Input Types)
+        // Guaranteed Sound Synthesizer unlocked on first user interaction to ensure click audio triggers reliably
+        let audioCtx = null;
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playClickSound() {
+            initAudio();
+            if (!audioCtx) return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.06);
+            
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.06);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.06);
+        }
+
+        // Full Pool of 10 Mixed Problem Sets (MCQ + Input Types)
         const problemPool = [
             {
                 title: "Standard Deviation & Variability",
@@ -806,11 +840,6 @@
             generateQuiz();
         }
 
-        function shuffleArray(array) {
-            return array.sort(() => Math.random() - 0.5);
-        }
-
-        // Generate exactement 10 Problem Sets as requested
         function generateQuiz() {
             const container = document.getElementById('quiz-container');
             container.innerHTML = '';
@@ -818,7 +847,6 @@
             stats = { correct: 0, attempted: 0, streak: 0 };
             updateKPIs();
 
-            // Always select all 10 problem sets from the pool to meet the strict 10-question requirement
             const selectedProblemSets = [...problemPool];
 
             selectedProblemSets.forEach((ps, psIndex) => {
@@ -832,19 +860,19 @@
                     if (step.type === 'mc') {
                         let buttonsHtml = '';
                         step.options.forEach((optText, optIndex) => {
-                            buttonsHtml += `<button class="step-option-btn" id="opt-${psIndex}-${stepIndex}-${optIndex}" onclick="checkMCAnswer(${psIndex}, ${stepIndex}, ${optIndex}, ${step.correctIndex})">${optText}</button>`;
+                            buttonsHtml += `<button class="step-option-btn" id="opt-${psIndex}-${stepIndex}-${optIndex}" onclick="playClickSound(); checkMCAnswer(${psIndex}, ${stepIndex}, ${optIndex}, ${step.correctIndex})">${optText}</button>`;
                         });
                         interactionHtml = `<div class="options-group">${buttonsHtml}</div>`;
                     } else if (step.type === 'input') {
                         interactionHtml = `
                             <div class="input-group">
                                 <input type="text" class="step-text-input" id="input-${psIndex}-${stepIndex}" placeholder="Type computed answer...">
-                                <button class="btn-submit-input" onclick="checkInputAnswer(${psIndex}, ${stepIndex})">Submit</button>
+                                <button class="btn-submit-input" onclick="playClickSound(); checkInputAnswer(${psIndex}, ${stepIndex})">Submit</button>
                             </div>
                         `;
                     }
 
-                    let hintButtonHtml = (currentMode === 'practice') ? `<button class="btn-hint" onclick="toggleHint(${psIndex}, ${stepIndex})">Show Hint</button>` : '';
+                    let hintButtonHtml = (currentMode === 'practice') ? `<button class="btn-hint" onclick="playClickSound(); toggleHint(${psIndex}, ${stepIndex})">Show Hint</button>` : '';
 
                     stepsHtml += `
                         <div class="step-container" id="step-container-${psIndex}-${stepIndex}">
@@ -963,4 +991,4 @@
         window.onload = generateQuiz;
     </script>
 </body>
-</html>
+</html> your source on this
