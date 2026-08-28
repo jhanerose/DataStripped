@@ -533,7 +533,7 @@
         <div class="landing-text">
             <h1>Data Mining Scenario Problem Sets</h1>
             <h2>Strip down your answers and see if you can handle the pressure</h2>
-            <p>Verify your math step-by-step. <strong>Solutions are revealed depending on your mode settings.</strong></p>
+            <p>Select your answers or enter your computed values. <strong>Get it wrong to see the solution.</strong></p>
             
             <div class="mode-selector" style="margin-top: 25px;">
                 <button class="mode-tab active" id="tab-practice" onclick="playSound('click'); setMode('practice')">Foreplay Mode</button>
@@ -550,15 +550,17 @@
             <span class="close-modal" onclick="playSound('click'); toggleModal(false)">&times;</span>
             <h3>Formula Reference Sheet</h3>
             <ul>
-                <li><strong>Expected Value (Categorical):</strong> <span class="formula-code">E(A) = P(A) &times; n</span></li>
+                <li><strong>Sample Variance:</strong> <span class="formula-code">s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span></li>
+                <li><strong>Sample Standard Deviation:</strong> <span class="formula-code">s = &radic;s&sup2;</span></li>
                 <li><strong>Coefficient of Variation:</strong> <span class="formula-code">CV = Std Deviation / Mean</span></li>
                 <li><strong>Standard Error:</strong> <span class="formula-code">SE = &sigma; / &radic;n</span></li>
-                <li><strong>Multiplication Rule:</strong> <span class="formula-code">P(A &cap; B) = P(A|B) &middot; P(B)</span></li>
+                <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span></li>
                 <li><strong>Additive Law:</strong> <span class="formula-code">P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span></li>
+                <li><strong>Conditional Probability:</strong> <span class="formula-code">P(A|B) = P(A &cap; B) / P(B)</span></li>
                 <li><strong>Law of Total Probability:</strong> <span class="formula-code">P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span></li>
                 <li><strong>Bayes Inference:</strong> <span class="formula-code">P(H|E) = P(E|H) &middot; P(H) / P(E)</span></li>
-                <li><strong>Binomial Dist:</strong> <span class="formula-code">E(X) = np</span> ; <span class="formula-code">&sigma;&sup2; = np(1-p)</span></li>
-                <li><strong>Poisson Dist:</strong> <span class="formula-code">E(Y) = &lambda;</span></li>
+                <li><strong>Poisson Distribution:</strong> <span class="formula-code">P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span></li>
+                <li><strong>Binomial Distribution:</strong> <span class="formula-code">E(X) = np</span> ; <span class="formula-code">&sigma;&sup2; = np(1-p)</span></li>
             </ul>
         </div>
     </div>
@@ -569,7 +571,6 @@
         let timerInterval = null;
         let secondsElapsed = 0;
 
-        // Upgraded Sound Synthesizer using Web Audio API with distinct feedback sounds
         let audioCtx = null;
         function initAudio() {
             if (!audioCtx) {
@@ -602,7 +603,7 @@
                 const gain = audioCtx.createGain();
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(440, now);
-                osc.frequency.setValueAtTime(659.25, now + 0.08); // Major chord chime
+                osc.frequency.setValueAtTime(659.25, now + 0.08);
                 gain.gain.setValueAtTime(0.12, now);
                 gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
                 osc.connect(gain);
@@ -636,194 +637,189 @@
             }
         }
 
-        // Master Problem Templates with randomized number variant factories
+        // Computational Problem Sets mirroring the 10 scenario items requested
         const baseTemplates = [
             {
-                title: "Standard Deviation & Variability",
+                title: "Sample Variance and Standard Deviation",
                 generate: () => {
-                    const variance = [16, 25, 36, 49, 64][Math.floor(Math.random() * 5)];
-                    const sd = Math.sqrt(variance);
-                    const mean = sd * [15, 20, 25][Math.floor(Math.random() * 3)];
-                    const n = [100, 144, 196, 225][Math.floor(Math.random() * 4)];
-                    const cv = (sd / mean).toFixed(3);
-                    const se = (sd / Math.sqrt(n)).toFixed(2);
-                    
                     return {
-                        context: `An API's response times follow a distribution where the sample variance is <span class='formula-code'>${variance} ms&sup2;</span> and the sample mean is <span class='formula-code'>${mean} ms</span>. The sample size collected is <span class='formula-code'>${n} requests</span>.`,
+                        context: `You are testing a new omnidirectional movement script in Godot. You record the stamina drain (in seconds) for 5 tactical sprints. The data points (<span class='formula-code'>x</span>) are: <span class='formula-code'>4, 6, 3, 8, 4</span>. The sample mean (<span class='formula-code'>x&#772;</span>) is <span class='formula-code'>5</span>.`,
                         steps: [
                             {
                                 type: "mc",
-                                label: "a) Compute the Standard Deviation (in ms).",
-                                hint: "Standard deviation is the positive square root of the variance.",
-                                options: [`A) ${sd} ms`, `B) ${variance} ms`, `C) ${sd * 3} ms`, `D) ${variance * variance} ms`],
-                                correctIndex: 0,
-                                explanation: `<span class='formula-code'>&radic;variance = &radic;${variance} = ${sd} ms.</span>`
-                            },
-                            {
-                                type: "input",
-                                label: "b) Calculate the Coefficient of Variation (CV) as a decimal.",
-                                hint: "CV is the ratio of the Standard Deviation to the Mean (<span class='formula-code'>SD / Mean</span>).",
-                                acceptAnswers: [cv, String(Number(cv))],
-                                explanation: `<span class='formula-code'>CV = SD / Mean = ${sd} / ${mean} = ${cv}.</span>`
-                            },
-                            {
-                                type: "mc",
-                                label: "c) Calculate the Standard Error (SE) of the mean.",
-                                hint: "Standard Error is the standard deviation divided by the square root of sample size <span class='formula-code'>n</span>.",
-                                options: [`A) ${(sd/2).toFixed(1)}`, `B) ${(sd/n).toFixed(2)}`, `C) ${(sd/4).toFixed(1)}`, `D) ${se}`],
-                                correctIndex: 3,
-                                explanation: `<span class='formula-code'>SE = &sigma; / &radic;n = ${sd} / &radic;${n} = ${se}.</span>`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Bayes Theorem (Medical Inference)",
-                generate: () => {
-                    const prev = 0.01;
-                    const sensitivity = 0.99;
-                    const falsePositive = 0.05;
-                    const totalE = (sensitivity * prev) + (falsePositive * (1 - prev));
-                    const posterior = ((sensitivity * prev) / totalE).toFixed(4);
-
-                    return {
-                        context: `A disease affects <span class='formula-code'>1%</span> of the population (<span class='formula-code'>P(H) = 0.01</span>). A test correctly returns positive for <span class='formula-code'>99%</span> who have it (<span class='formula-code'>P(E|H) = 0.99</span>), and incorrectly for <span class='formula-code'>5%</span> who do not (<span class='formula-code'>P(E|not H) = 0.05</span>).`,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "a) Compute the overall probability of a positive result, P(E).",
-                                hint: "Use the law of total probability: <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
-                                options: ["A) 0.0100", `B) ${totalE.toFixed(4)}`, "C) 0.0495", "D) 0.9900"],
+                                label: "a) Compute the Sample Variance (s&sup2;).",
+                                hint: "Use formula: <span class='formula-code'>s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span> where <span class='formula-code'>n = 5</span>.",
+                                options: ["A) Variance = 16.0", "B) Variance = 4.0", "C) Variance = 3.2", "D) Variance = 2.0"],
                                 correctIndex: 1,
-                                explanation: `<span class='formula-code'>P(E) = (0.99 &times; 0.01) + (0.05 &times; 0.99) = ${totalE.toFixed(4)}.</span>`
+                                explanation: `<span class='formula-code'>&Sigma;(x - 5)&sup2; = (4-5)&sup2; + (6-5)&sup2; + (3-5)&sup2; + (8-5)&sup2; + (4-5)&sup2; = 1 + 1 + 4 + 9 + 1 = 16.</span> Then divide by <span class='formula-code'>n - 1 = 4</span> $\rightarrow$ <span class='formula-code'>16 / 4 = 4.0</span>.`
                             },
                             {
-                                type: "input",
-                                label: "b) If a patient tests positive, what is P(H|E)? (Type rounded decimal to 4 places)",
-                                hint: "Use Bayes' theorem: <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
-                                acceptAnswers: [posterior],
-                                explanation: `<span class='formula-code'>P(H|E) = (0.99 &times; 0.01) / ${totalE.toFixed(4)} &approx; ${posterior}.</span>`
+                                type: "mc",
+                                label: "b) Compute the Sample Standard Deviation (s).",
+                                hint: "Standard deviation is the positive square root of the sample variance.",
+                                options: ["A) s = 4.0", "B) s = 2.0", "C) s = 1.78", "D) s = 16.0"],
+                                correctIndex: 1,
+                                explanation: `<span class='formula-code'>s = &radic;4.0 = 2.0</span>.`
                             }
                         ]
                     };
                 }
             },
             {
-                title: "Bayes Theorem (Spam Filter)",
+                title: "Coefficient of Variation (CV)",
                 generate: () => {
-                    const spamPrior = 0.4;
-                    const wordSpam = 0.3;
-                    const wordLegit = 0.02;
-                    const totalF = (wordSpam * spamPrior) + (wordLegit * (1 - spamPrior));
-                    const posteriorSpam = ((wordSpam * spamPrior) / totalF).toFixed(3);
-
                     return {
-                        context: `<span class='formula-code'>40%</span> of incoming mail is spam (<span class='formula-code'>P(S) = 0.4</span>). The word 'FREE' appears in <span class='formula-code'>30%</span> of spam (<span class='formula-code'>P(F|S) = 0.3</span>) and in <span class='formula-code'>2%</span> of legitimate mail (<span class='formula-code'>P(F|not S) = 0.02</span>).`,
+                        context: `Using the results from the Godot stamina playtest where <span class='formula-code'>Mean = 5</span> and <span class='formula-code'>Std Dev = 2.0</span>, calculate the relative variability.`,
                         steps: [
                             {
-                                type: "mc",
-                                label: "a) Compute the overall probability an email contains 'FREE', P(F).",
-                                hint: "Law of total probability.",
-                                options: [`A) ${totalF.toFixed(3)}`, "B) 0.320", "C) 0.120", "D) 0.144"],
-                                correctIndex: 0,
-                                explanation: `<span class='formula-code'>P(F) = (0.3 &times; 0.4) + (0.02 &times; 0.6) = ${totalF.toFixed(3)}.</span>`
-                            },
-                            {
                                 type: "input",
-                                label: "b) What is P(S|F)? (Type rounded decimal to 3 places)",
-                                hint: "Bayes: <span class='formula-code'>P(S|F) = (P(F|S) &middot; P(S)) / P(F)</span>.",
-                                acceptAnswers: [posteriorSpam, "0.909"],
-                                explanation: `<span class='formula-code'>P(S|F) = (0.3 &times; 0.4) / ${totalF.toFixed(3)} &approx; ${posteriorSpam}.</span>`
+                                label: "Calculate the Coefficient of Variation (CV) as a decimal.",
+                                hint: "CV is the ratio of Standard Deviation to Mean (<span class='formula-code'>Std Dev / Mean</span>).",
+                                acceptAnswers: ["0.40", "0.4"],
+                                explanation: `<span class='formula-code'>CV = 2.0 / 5 = 0.40</span>.`
                             }
                         ]
                     };
                 }
             },
             {
-                title: "Application Telemetry (Probability Rules)",
+                title: "Standard Error (SE)",
                 generate: () => {
-                    const pA = 0.60;
-                    const pB = 0.50;
-                    const pUnion = 0.80;
-                    const pIntersection = (pA + pB - pUnion).toFixed(2);
-                    const pCond = (pIntersection / pB).toFixed(2);
-
                     return {
-                        context: `In a streaming app, <span class='formula-code'>60%</span> watch movies (<span class='formula-code'>P(A)=0.60</span>), <span class='formula-code'>50%</span> watch documentaries (<span class='formula-code'>P(B)=0.50</span>), and <span class='formula-code'>80%</span> watch at least one (<span class='formula-code'>P(A &cup; B)=0.80</span>).`,
+                        context: `Your "KadaDiscover" web app API has a known population standard deviation (<span class='formula-code'>&sigma;</span>) of <span class='formula-code'>120 ms</span> for response times. You collected a sample size (<span class='formula-code'>n</span>) of <span class='formula-code'>144 requests</span>.`,
                         steps: [
                             {
                                 type: "mc",
-                                label: "a) What proportion of users watch BOTH movies and documentaries? P(A &cap; B)",
+                                label: "Calculate the Standard Error (SE) of the mean.",
+                                hint: "Standard Error formula: <span class='formula-code'>SE = &sigma; / &radic;n</span>.",
+                                options: ["A) 12.0", "B) 0.83", "C) 10.0", "D) 1.20"],
+                                correctIndex: 2,
+                                explanation: `<span class='formula-code'>SE = 120 / &radic;144 = 120 / 12 = 10.0</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Sample Covariance",
+                generate: () => {
+                    return {
+                        context: `You are balancing a 2D RPG and analyzing the relationship between Player Level (<span class='formula-code'>X</span>) and Gold drops (<span class='formula-code'>Y</span>) for 3 players: <br>(2, 10), (4, 20), (6, 30). Given <span class='formula-code'>x&#772; = 4</span> and <span class='formula-code'>y&#772; = 20</span>.`,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "Compute the sample covariance, cov(x,y).",
+                                hint: "Formula: <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span>.",
+                                options: ["A) 40", "B) 20", "C) 10", "D) 0"],
+                                correctIndex: 1,
+                                explanation: `<span class='formula-code'>&Sigma;(x - 4)(y - 20) = (-2)(-10) + (0)(0) + (2)(10) = 20 + 0 + 20 = 40</span>. Divided by <span class='formula-code'>n - 1 = 2</span> $\rightarrow$ <span class='formula-code'>40 / 2 = 20</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Additive Law of Probability",
+                generate: () => {
+                    return {
+                        context: `In your web portfolio analytics, <span class='formula-code'>70%</span> of visitors view web apps (<span class='formula-code'>P(A)=0.70</span>), <span class='formula-code'>50%</span> view pixel art assets (<span class='formula-code'>P(B)=0.50</span>), and <span class='formula-code'>90%</span> view at least one (<span class='formula-code'>P(A &cup; B)=0.90</span>).`,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "What proportion of users view BOTH web apps and pixel art? P(A &cap; B)",
                                 hint: "Additive Law: <span class='formula-code'>P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span>.",
-                                options: ["A) 0.10", "B) 0.20", `C) ${pIntersection}`, "D) 1.10"],
+                                options: ["A) 0.20", "B) 0.35", "C) 0.30", "D) 1.20"],
                                 correctIndex: 2,
-                                explanation: `<span class='formula-code'>0.80 = 0.60 + 0.50 - P(A &cap; B) &rArr; P(A &cap; B) = ${pIntersection}.</span>`
-                            },
+                                explanation: `<span class='formula-code'>0.90 = 0.70 + 0.50 - P(A &cap; B) &rArr; P(A &cap; B) = 0.30</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Conditional Probability",
+                generate: () => {
+                    return {
+                        context: `Using web portfolio telemetry from the previous set where <span class='formula-code'>P(A)=0.70</span>, <span class='formula-code'>P(B)=0.50</span>, and <span class='formula-code'>P(A &cap; B)=0.30</span>.`,
+                        steps: [
                             {
-                                type: "input",
-                                label: "b) What is the conditional probability P(A|B) as a decimal?",
+                                type: "mc",
+                                label: "If a user views pixel art (B), what is the probability they also view web apps (A)? Compute P(A|B).",
                                 hint: "Conditional Probability: <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span>.",
-                                acceptAnswers: [pCond, "0.6", "0.60"],
-                                explanation: `<span class='formula-code'>P(A|B) = ${pIntersection} / 0.50 = ${pCond}.</span>`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "System Alerts (Poisson Distribution)",
-                generate: () => {
-                    const lam = [2, 3, 4][Math.floor(Math.random() * 3)];
-                    const eVal = (lam * Math.exp(-lam)).toFixed(4);
-
-                    return {
-                        context: `A server desk receives an average of <span class='formula-code'>${lam} alerts per hour (&lambda; = ${lam})</span>.`,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "a) What is the Expected Value, E(Y)?",
-                                hint: "For Poisson, mean equals lambda.",
-                                options: ["A) 0.5", "B) 1.0", `C) ${lam}.0`, "D) 4.0"],
-                                correctIndex: 2,
-                                explanation: `<span class='formula-code'>E(Y) = &lambda; = ${lam}.</span>`
-                            },
-                            {
-                                type: "input",
-                                label: "b) What is the probability of receiving exactly 1 alert in an hour? (Round to 4 decimals, e &approx; 2.718)",
-                                hint: "Formula: <span class='formula-code'>P(y) = (&lambda;^y * e^(&minus;&lambda;)) / y!</span>",
-                                acceptAnswers: [eVal, "0.2707"],
-                                explanation: `<span class='formula-code'>P(1) = (${lam}^1 * e^(-${lam})) / 1! &approx; ${eVal}.</span>`
-                            }
-                        ]
-                    };
-                }
-            },
-            {
-                title: "Market Performance (Binomial Distribution)",
-                generate: () => {
-                    const n = 5;
-                    const p = 0.6;
-                    const expVal = n * p;
-                    const varVal = (n * p * (1 - p)).toFixed(1);
-
-                    return {
-                        context: `You track a stock that historically has a <span class='formula-code'>60% chance</span> of going up daily (<span class='formula-code'>p = ${p}</span>). You evaluate a <span class='formula-code'>${n}-day work week (n = ${n})</span>.`,
-                        steps: [
-                            {
-                                type: "mc",
-                                label: "a) What is the expected number of increases over 5 days? E(X)",
-                                hint: "Binomial: <span class='formula-code'>E(X) = n &times; p</span>.",
-                                options: ["A) 2", `B) ${expVal}`, "C) 4", "D) 5"],
+                                options: ["A) 0.42", "B) 0.60", "C) 0.40", "D) 0.75"],
                                 correctIndex: 1,
-                                explanation: `<span class='formula-code'>E(X) = ${n} &times; ${p} = ${expVal}.</span>`
-                            },
+                                explanation: `<span class='formula-code'>P(A|B) = 0.30 / 0.50 = 0.60</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Law of Total Probability",
+                generate: () => {
+                    return {
+                        context: `You parse intents for "Yuri", your offline smart home AI. Historically, <span class='formula-code'>30%</span> of voice activations are for lights (<span class='formula-code'>P(L)=0.30</span>). The word "brightness" appears in <span class='formula-code'>80%</span> of light activations (<span class='formula-code'>P(B|L)=0.80</span>) and in <span class='formula-code'>5%</span> of non-light activations (<span class='formula-code'>P(B|not L)=0.05</span>).`,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "Compute the overall probability that the word 'brightness' is spoken, P(B).",
+                                hint: "Law of Total Probability: <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
+                                options: ["A) 0.850", "B) 0.240", "C) 0.275", "D) 0.120"],
+                                correctIndex: 2,
+                                explanation: `<span class='formula-code'>P(B) = (0.80 &times; 0.30) + (0.05 &times; 0.70) = 0.24 + 0.035 = 0.275</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Bayes Inference",
+                generate: () => {
+                    return {
+                        context: `Using the Yuri AI telemetry data where <span class='formula-code'>P(L)=0.30</span>, <span class='formula-code'>P(B|L)=0.80</span>, and total probability <span class='formula-code'>P(B)=0.275</span>.`,
+                        steps: [
                             {
                                 type: "input",
-                                label: "b) What is the variance of this binomial distribution?",
-                                hint: "Binomial Variance: <span class='formula-code'>&sigma;&sup2; = n &times; p &times; (1 - p)</span>.",
-                                acceptAnswers: [varVal, "1.2", "1.20"],
-                                explanation: `<span class='formula-code'>&sigma;&sup2; = ${n} &times; ${p} &times; 0.4 = ${varVal}.</span>`
+                                label: "If the microphone picks up 'brightness', what is P(L|B)? (Type rounded decimal to 3 places)",
+                                hint: "Bayes' theorem: <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
+                                acceptAnswers: ["0.873", "0.8727"],
+                                explanation: `<span class='formula-code'>P(L|B) = (0.80 &times; 0.30) / 0.275 = 0.24 / 0.275 &approx; 0.873</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Poisson Distribution",
+                generate: () => {
+                    return {
+                        context: `The database for your vehicle rental system, "Mobilis", receives an average of <span class='formula-code'>3 booking errors per hour (&lambda; = 3)</span>.`,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "What is the probability of receiving exactly 2 errors in an hour? (e &approx; 2.718)",
+                                hint: "Poisson formula: <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span>",
+                                options: ["A) 0.112", "B) 0.224", "C) 0.448", "D) 0.666"],
+                                correctIndex: 1,
+                                explanation: `<span class='formula-code'>P(2) = (3^2 &times; e^(-3)) / 2! = (9 &times; 0.04978) / 2 = 0.224</span>.`
+                            }
+                        ]
+                    };
+                }
+            },
+            {
+                title: "Binomial Distribution",
+                generate: () => {
+                    return {
+                        context: `You implement a game mechanic where a player has a <span class='formula-code'>40% chance</span> to successfully hide in a prop (<span class='formula-code'>p = 0.40</span>). The player attempts to hide <span class='formula-code'>5 times</span> during a chase sequence (<span class='formula-code'>n = 5</span>).`,
+                        steps: [
+                            {
+                                type: "mc",
+                                label: "What is the expected number of successful hides E(X) and the variance &sigma;&sup2;?",
+                                hint: "Binomial formulas: <span class='formula-code'>E(X) = np</span> and <span class='formula-code'>&sigma;&sup2; = np(1-p)</span>.",
+                                options: ["A) E(X) = 2.0, Variance = 1.2", "B) E(X) = 2.0, Variance = 0.8", "C) E(X) = 3.0, Variance = 1.2", "D) E(X) = 0.4, Variance = 2.0"],
+                                correctIndex: 0,
+                                explanation: `<span class='formula-code'>E(X) = 5 &times; 0.40 = 2.0</span>. <span class='formula-code'>&sigma;&sup2; = 5 &times; 0.40 &times; 0.60 = 1.2</span>.`
                             }
                         ]
                     };
@@ -858,10 +854,8 @@
             stats = { correct: 0, attempted: 0, streak: 0 };
             updateKPIs();
 
-            // Shuffle and generate fresh randomized instances of problems
-            currentProblemSets = baseTemplates
-                .map(template => template.generate())
-                .sort(() => Math.random() - 0.5);
+            // Render all 10 base template problem sets in order
+            currentProblemSets = baseTemplates.map(template => template.generate());
 
             currentProblemSets.forEach((ps, psIndex) => {
                 const card = document.createElement('div');
@@ -895,14 +889,14 @@
                             <div class="step-actions">
                                 ${hintButtonHtml}
                             </div>
-                            <div class="hint-box" id="hint-${psIndex}-${stepIndex}">💡 Hint: ${step.hint}</div>
+                            <div class="hint-box" id="hint-${psIndex}-${stepIndex}"> ${step.hint}</div>
                             <div class="feedback-box" id="feedback-${psIndex}-${stepIndex}"></div>
                         </div>
                     `;
                 });
 
                 card.innerHTML = `
-                    <div class="problem-title">Set ${psIndex + 1}: ${ps.title}</div>
+                    <div class="problem-title">Item ${psIndex + 1}: ${ps.title}</div>
                     <div class="problem-context">${ps.context}</div>
                     ${stepsHtml}
                 `;
