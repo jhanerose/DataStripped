@@ -581,6 +581,7 @@
         let stats = { correct: 0, attempted: 0, streak: 0 };
         let timerInterval = null;
         let secondsElapsed = 0;
+        let currentProblemSets = [];
 
         let audioCtx = null;
         function initAudio() {
@@ -1254,7 +1255,6 @@
             updateKPIs();
 
             if (currentPart === 'part1') {
-                // Shuffle Part 1 templates order so the sequence of problem types changes every time
                 let shuffledTemplates = [...part1Templates].sort(() => Math.random() - 0.5);
                 currentProblemSets = shuffledTemplates.map(template => {
                     const instance = template.generate();
@@ -1294,7 +1294,7 @@
                                 <div class="step-actions">
                                     ${hintButtonHtml}
                                 </div>
-                                <div class="hint-box" id="hint-${psIndex}-${stepIndex}">💡 Hint: ${step.hint}</div>
+                                <div class="hint-box" id="hint-${psIndex}-${stepIndex}">${step.hint}</div>
                                 <div class="feedback-box" id="feedback-${psIndex}-${stepIndex}"></div>
                             </div>
                         `;
@@ -1309,7 +1309,6 @@
                 });
 
             } else {
-                // Part 2: Fully shuffle conceptual questions and option choices on every generation to guarantee non-repeating layouts
                 let shuffledBank = [...conceptualBank].sort(() => Math.random() - 0.5);
                 activeQuestions = shuffledBank.slice(0, 50).map((item, index) => {
                     let indexedOpts = item.options.map((opt, idx) => ({ text: opt, originalIdx: idx }));
@@ -1326,7 +1325,7 @@
                         options: formattedOpts,
                         correct: newCorrectIdx,
                         source: item.source,
-                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> (Source: ${item.source})`
+                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> ${item.source})`
                     };
                 });
 
@@ -1352,7 +1351,7 @@
                         <div class="step-actions">
                             ${hintButtonHtml}
                         </div>
-                        <div class="hint-box" id="qhint-${qIndex}">📖 Source Material: ${qItem.source}</div>
+                        <div class="hint-box" id="qhint-${qIndex}">${qItem.source}</div>
                         <div class="feedback-box" id="qfeedback-${qIndex}"></div>
                     `;
                     container.appendChild(card);
