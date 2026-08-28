@@ -457,12 +457,12 @@
             background: #111;
             border: 1px solid #333;
             width: 90%;
-            max-width: 600px;
-            margin: 10% auto;
+            max-width: 650px;
+            margin: 5% auto;
             padding: 40px;
             border-radius: 12px;
             position: relative;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
@@ -558,19 +558,37 @@
     <div class="modal" id="formula-modal">
         <div class="modal-content">
             <span class="close-modal" onclick="playSound('click'); toggleModal(false)">&times;</span>
-            <h3>Formula Reference Sheet</h3>
+            <h3>Comprehensive Formula Reference Sheet</h3>
             <ul>
+                <li><strong>Probability Formula:</strong> <span class="formula-code">P(A) = no. of preferred outcomes / total no. of possible outcomes</span></li>
+                <li><strong>Independent Events:</strong> <span class="formula-code">P(A &cap; B) = P(A) &times; P(B)</span></li>
+                <li><strong>Dependent Events:</strong> <span class="formula-code">P(A &cap; B) = P(A) &times; P(A|B)</span></li>
+                <li><strong>Experimental Probability:</strong> <span class="formula-code">p = no. of successful trials / total no. of trials</span></li>
+                <li><strong>Categorical Outcomes (Expected Frequency):</strong> <span class="formula-code">E(A) = P(A) &times; n</span></li>
+                <li><strong>Complements:</strong> <span class="formula-code">P(A') = 1 - P(A)</span> or <span class="formula-code">P(A) + P(A') = 1</span></li>
+                <li><strong>Interval Width:</strong> <span class="formula-code">Interval width = (largest - smallest) / no. of intervals</span></li>
+                <li><strong>Mean:</strong> <span class="formula-code">x&#772; = &Sigma;x / n</span></li>
+                <li><strong>Population Variance:</strong> <span class="formula-code">&sigma;&sup2; = &Sigma;(x - &mu;)&sup2; / N</span></li>
                 <li><strong>Sample Variance:</strong> <span class="formula-code">s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span></li>
-                <li><strong>Sample Standard Deviation:</strong> <span class="formula-code">s = &radic;s&sup2;</span></li>
-                <li><strong>Coefficient of Variation:</strong> <span class="formula-code">CV = Std Deviation / Mean</span></li>
+                <li><strong>Standard Deviation:</strong> <span class="formula-code">&sigma; = &radic;[&Sigma;(x - &mu;)&sup2; / N]</span> or <span class="formula-code">s = &radic;s&sup2;</span></li>
+                <li><strong>Coefficient of Variation:</strong> <span class="formula-code">CV = Standard Deviation / Mean</span></li>
+                <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (N - 1)</span></li>
+                <li><strong>Correlation Coefficient (r):</strong> <span class="formula-code">rxy = cov(x,y) / (s_x &middot; s_y)</span></li>
                 <li><strong>Standard Error:</strong> <span class="formula-code">SE = &sigma; / &radic;n</span></li>
-                <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span></li>
-                <li><strong>Additive Law:</strong> <span class="formula-code">P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span></li>
+                <li><strong>Z-Score:</strong> <span class="formula-code">z = (x - &mu;) / &sigma;</span></li>
+                <li><strong>Bernoulli Distribution:</strong> <span class="formula-code">E(x) = p</span> , <span class="formula-code">&sigma;&sup2; = p(1 - p)</span></li>
+                <li><strong>Binomial Probability Function:</strong> <span class="formula-code">P(y) = C(n,y) &middot; p^y &middot; (1-p)^(n-y)</span> where <span class="formula-code">C(n,y) = n! / (y!(n-y)!)</span></li>
+                <li><strong>Poisson Distribution:</strong> <span class="formula-code">P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span> | <span class="formula-code">E(y) = &lambda;</span>, <span class="formula-code">&sigma;&sup2; = &lambda;</span></li>
+                <li><strong>Standardizing Normal Distribution:</strong> <span class="formula-code">z = (y - &mu;) / &sigma;</span></li>
+                <li><strong>Student's T-Distribution:</strong> <span class="formula-code">E(y) = &mu; (k &ge; 2)</span>, <span class="formula-code">&sigma;&sup2; = (s&sup2; &middot; k) / (k - 2)</span></li>
+                <li><strong>Chi-Squared Distribution:</strong> <span class="formula-code">E(y) = k</span>, <span class="formula-code">&sigma;&sup2; = 2k</span></li>
+                <li><strong>Exponential Distribution:</strong> <span class="formula-code">E(y) = 1 / &lambda;</span>, <span class="formula-code">&sigma;&sup2; = 1 / &lambda;&sup2;</span></li>
+                <li><strong>Logistic Distribution:</strong> <span class="formula-code">E(y) = &mu;</span>, <span class="formula-code">&sigma;&sup2; = (s&sup2; &middot; &pi;&sup2;) / 3</span></li>
                 <li><strong>Conditional Probability:</strong> <span class="formula-code">P(A|B) = P(A &cap; B) / P(B)</span></li>
-                <li><strong>Law of Total Probability:</strong> <span class="formula-code">P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span></li>
-                <li><strong>Bayes Inference:</strong> <span class="formula-code">P(H|E) = P(E|H) &middot; P(H) / P(E)</span></li>
-                <li><strong>Poisson Distribution:</strong> <span class="formula-code">P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span></li>
-                <li><strong>Binomial Distribution:</strong> <span class="formula-code">E(X) = np</span> ; <span class="formula-code">&sigma;&sup2; = np(1-p)</span></li>
+                <li><strong>Multiplication Rule:</strong> <span class="formula-code">P(A &cap; B) = P(A|B) &middot; P(B)</span></li>
+                <li><strong>Additive Law:</strong> <span class="formula-code">P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span></li>
+                <li><strong>Law of Total Probability:</strong> <span class="formula-code">P(A) = &Sigma; P(A|B_i) &middot; P(B_i)</span></li>
+                <li><strong>Bayes Inference:</strong> <span class="formula-code">P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span></li>
             </ul>
         </div>
     </div>
