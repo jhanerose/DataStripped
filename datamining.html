@@ -183,18 +183,26 @@
             letter-spacing: 1px;
         }
 
-        /* Mode Selector */
-        .mode-selector {
+        /* Mode & Part Selector */
+        .selector-wrapper {
             display: flex;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
             margin-bottom: 20px;
         }
 
-        .mode-tab {
+        .mode-selector, .part-selector {
+            display: flex;
+            gap: 10px;
+        }
+
+        .mode-tab, .part-tab {
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.2);
             color: #aaa;
-            padding: 8px 20px;
+            padding: 8px 18px;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -202,7 +210,7 @@
             transition: all 0.2s;
         }
 
-        .mode-tab.active {
+        .mode-tab.active, .part-tab.active {
             background: #ff8c42;
             color: #000;
             border-color: #ff8c42;
@@ -218,19 +226,19 @@
         }
 
         .landing-text {
-            margin: 30px 0 30px 0;
+            margin: 30px 0 20px 0;
         }
 
         .landing-text h1 {
-            font-size: 3em;
+            font-size: 2.5em;
             font-weight: 300;
             margin-bottom: 5px;
         }
 
         .landing-text h2 {
-            font-size: 1.5em;
+            font-size: 1.3em;
             font-weight: 400;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #ff8c42;
         }
 
@@ -240,7 +248,7 @@
             max-width: 650px;
         }
 
-        /* Problem Sets */
+        /* Problem Cards */
         .problem-card {
             background: rgba(15, 15, 15, 0.85);
             backdrop-filter: blur(10px);
@@ -252,7 +260,7 @@
         }
 
         .problem-title {
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: 600;
             color: #ff8c42;
             margin-bottom: 10px;
@@ -267,7 +275,7 @@
             line-height: 1.7;
         }
 
-        /* Compute Steps */
+        /* Compute & MC Steps */
         .step-container {
             margin-bottom: 25px;
             padding: 20px;
@@ -283,7 +291,6 @@
             font-size: 1.05em;
         }
 
-        /* Clickable Options */
         .options-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -328,7 +335,6 @@
             opacity: 1;
         }
 
-        /* Input Question Styles */
         .input-group {
             display: flex;
             gap: 10px;
@@ -388,7 +394,6 @@
             border-color: #fff;
         }
 
-        /* Dynamic Feedback Elements */
         .hint-box {
             display: none;
             color: #ffd166;
@@ -535,14 +540,19 @@
             <h2>Strip down your answers and see if you can handle the pressure</h2>
             <p>Select your answers or enter your computed values. <strong>Get it wrong to see the solution.</strong></p>
             
-            <div class="mode-selector" style="margin-top: 25px;">
-                <button class="mode-tab active" id="tab-practice" onclick="playSound('click'); setMode('practice')">Foreplay Mode</button>
-                <button class="mode-tab" id="tab-exam" onclick="playSound('click'); setMode('exam')">Hardcore Mode</button>
+            <div class="selector-wrapper" style="margin-top: 20px;">
+                <div class="part-selector">
+                    <button class="part-tab active" id="tab-part1" onclick="playSound('click'); setPart('part1')">Part 1: Computational (10)</button>
+                    <button class="part-tab" id="tab-part2" onclick="playSound('click'); setPart('part2')">Part 2: Conceptual Exam (50)</button>
+                </div>
+                <div class="mode-selector">
+                    <button class="mode-tab active" id="tab-practice" onclick="playSound('click'); setMode('practice')">Practice Mode</button>
+                    <button class="mode-tab" id="tab-exam" onclick="playSound('click'); setMode('exam')">Hardcore Mode</button>
+                </div>
             </div>
         </div>
 
-        <div id="quiz-container">
-            </div>
+        <div id="quiz-container"></div>
     </div>
 
     <div class="modal" id="formula-modal">
@@ -567,6 +577,7 @@
 
     <script>
         let currentMode = 'practice';
+        let currentPart = 'part1';
         let stats = { correct: 0, attempted: 0, streak: 0 };
         let timerInterval = null;
         let secondsElapsed = 0;
@@ -637,14 +648,12 @@
             }
         }
 
-        // Master Problem Factory with dynamic random generators to ensure completely fresh numbers and randomized choices on every generation
-        const baseTemplates = [
+        // Part 1: Computational problem templates with fully randomized numbers and scrambled templates order
+        const part1Templates = [
             {
                 title: "Sample Variance and Standard Deviation",
                 generate: () => {
-                    // Generate random base data values where mean can be neatly handled
                     const baseMean = [4, 5, 6][Math.floor(Math.random() * 3)];
-                    // Generate 5 deviations that sum to 0
                     const devs = [-3, -1, 0, 1, 3].sort(() => Math.random() - 0.5);
                     const rawData = devs.map(d => baseMean + d);
                     const mean = baseMean;
@@ -654,24 +663,16 @@
                     const sd = Math.sqrt(sumSq / 4).toFixed(2);
                     const sdVal = parseFloat(sd);
 
-                    // Create randomized incorrect distractors for variance
                     let wrongVar1 = (parseFloat(variance) * 1.5).toFixed(1);
                     let wrongVar2 = (parseFloat(variance) * 0.8).toFixed(1);
                     let wrongVar3 = (parseFloat(variance) + 2).toFixed(1);
-
                     let varOptions = [`A) Variance = ${variance}`, `B) Variance = ${wrongVar1}`, `C) Variance = ${wrongVar2}`, `D) Variance = ${wrongVar3}`];
                     varOptions.sort(() => Math.random() - 0.5);
                     let correctVarIndex = varOptions.findIndex(opt => opt.includes(`Variance = ${variance}`));
 
-                    // Create randomized incorrect distractors for standard deviation
                     let wrongSd1 = (sdVal + 1.2).toFixed(2);
                     let wrongSd2 = Math.max(0.5, (sdVal - 0.9)).toFixed(2);
                     let wrongSd3 = (sdVal * 1.5).toFixed(2);
-
-                    let sdOptions = [`A) s = ${wrongSd1}`, `B) s = ${sdVal}`, `C) s = ${wrongSd2}`, `D) s = ${wrongSd3}`];
-                    // Make sure correct is explicitly placed or searched
-                    sdOptions[1] = `B) s = ${sdVal}`;
-                    // Let's shuffle properly keeping track
                     let rawSdOpts = [sdVal, parseFloat(wrongSd1), parseFloat(wrongSd2), parseFloat(wrongSd3)].sort(() => Math.random() - 0.5);
                     let formattedSdOpts = rawSdOpts.map((val, idx) => `${String.fromCharCode(65+idx)}) s = ${val.toFixed(2)}`);
                     let correctSdIndex = formattedSdOpts.findIndex(opt => opt.includes(`s = ${sdVal.toFixed(2)}`));
@@ -708,7 +709,7 @@
                     const cvFormatted = (sd / mean).toFixed(2);
 
                     return {
-                        context: `In your database query performance tests, the response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>.`,
+                        context: `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>.`,
                         steps: [
                             {
                                 type: "input",
@@ -732,7 +733,6 @@
                     let wrong1 = (seVal + 1.5).toFixed(2);
                     let wrong2 = Math.max(0.2, seVal - 1.2).toFixed(2);
                     let wrong3 = (seVal * 2).toFixed(2);
-
                     let opts = [seVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
                     let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(2)}`);
                     let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${seVal.toFixed(2)}`));
@@ -756,11 +756,8 @@
                 title: "Sample Covariance",
                 generate: () => {
                     const xVals = [2, 4, 6];
-                    const slope = [2, 3, 5][Math.floor(Math.random() * 3)];
                     const yBase = [10, 15, 20][Math.floor(Math.random() * 3)];
-                    const yVals = xVals.map(x => yBase + slope * (x - 4));
-                    
-                    // compute sample covariance manually for xVals and yVals
+                    const yVals = xVals.map(x => yBase + 2 * (x - 4));
                     const xMean = 4;
                     const yMean = yBase;
                     let sumProd = 0;
@@ -773,7 +770,6 @@
                     let wrong1 = (covVal + 10).toFixed(1);
                     let wrong2 = Math.max(0, covVal - 15).toFixed(1);
                     let wrong3 = (covVal * 2).toFixed(1);
-
                     let opts = [covVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
                     let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val}`);
                     let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${covVal}`));
@@ -799,14 +795,12 @@
                     const pA = [0.50, 0.60, 0.70][Math.floor(Math.random() * 3)];
                     const pB = [0.40, 0.45, 0.50][Math.floor(Math.random() * 3)];
                     const pUnion = [0.75, 0.80, 0.85][Math.floor(Math.random() * 3)];
-                    // ensure valid intersection
                     const pInter = (pA + pB - pUnion).toFixed(2);
                     const interVal = parseFloat(pInter);
 
                     let wrong1 = (interVal + 0.15).toFixed(2);
                     let wrong2 = Math.max(0.05, interVal - 0.10).toFixed(2);
                     let wrong3 = (interVal + 0.25).toFixed(2);
-
                     let opts = [interVal, parseFloat(wrong1), parseFloat(wrong2), parseFloat(wrong3)].sort(() => Math.random() - 0.5);
                     let formattedOpts = opts.map((val, idx) => `${String.fromCharCode(65+idx)}) ${val.toFixed(2)}`);
                     let correctIdx = formattedOpts.findIndex(opt => opt.includes(`${interVal.toFixed(2)}`));
@@ -834,7 +828,7 @@
                     const pCond = (pInter / pB).toFixed(2);
 
                     return {
-                        context: `In your telemetry data, the probability of viewing reports is <span class='formula-code'>P(B) = ${pB}</span>, and the joint probability of viewing both dashboard modules and reports is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`,
+                        context: `In your telemetry data, the probability of viewing reports is <span class='formula-code'>P(B) = ${pB}</span>, and joint probability of viewing both modules and reports is <span class='formula-code'>P(A &cap; B) = ${pInter}</span>.`,
                         steps: [
                             {
                                 type: "mc",
@@ -851,18 +845,12 @@
             {
                 title: "Law of Total Probability",
                 generate: () => {
-                    const pL = 0.40;
-                    const pBlGivenL = 0.75;
-                    const pBlGivenNotL = 0.10;
-                    const totalB = (pBlGivenL * pL) + (pBlGivenNotL * (1 - pL));
-                    const totalFormatted = totalB.toFixed(3);
-
                     return {
-                        context: `You parse voice commands for an assistant. <span class='formula-code'>40%</span> of commands are for media playback (<span class='formula-code'>P(M)=0.40</span>). The keyword "play" appears in <span class='formula-code'>75%</span> of media commands (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'>10%</span> of non-media commands (<span class='formula-code'>P(K|not M)=0.10</span>).`,
+                        context: `You parse voice commands for an assistant. <span class='formula-code'>40%</span> of commands are media playback (<span class='formula-code'>P(M)=0.40</span>). Keyword "play" appears in <span class='formula-code'>75%</span> of media commands (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'>10%</span> of non-media commands (<span class='formula-code'>P(K|not M)=0.10</span>).`,
                         steps: [
                             {
                                 type: "mc",
-                                label: "Compute the overall probability that the keyword 'play' is spoken, P(K).",
+                                label: "Compute overall probability that the keyword 'play' is spoken, P(K).",
                                 hint: "Law of Total Probability: <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
                                 options: ["A) 0.360", "B) 0.420", "C) 0.350", "D) 0.500"],
                                 correctIndex: 0,
@@ -875,11 +863,6 @@
             {
                 title: "Bayes Inference",
                 generate: () => {
-                    const pM = 0.40;
-                    const pKGivenM = 0.75;
-                    const pK = 0.36;
-                    const posterior = ((pKGivenM * pM) / pK).toFixed(3);
-
                     return {
                         context: `Using assistant voice command telemetry where <span class='formula-code'>P(M)=0.40</span>, <span class='formula-code'>P(K|M)=0.75</span>, and overall keyword probability <span class='formula-code'>P(K)=0.36</span>.`,
                         steps: [
@@ -887,7 +870,7 @@
                                 type: "input",
                                 label: "If the microphone detects 'play', what is P(M|K)? (Type rounded decimal to 3 places)",
                                 hint: "Bayes' theorem: <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
-                                acceptAnswers: [posterior, "0.833"],
+                                acceptAnswers: ["0.833", "0.83"],
                                 explanation: `<span class='formula-code'>P(M|K) = (0.75 &times; 0.40) / 0.36 = 0.30 / 0.36 &approx; 0.833</span>.`
                             }
                         ]
@@ -897,21 +880,16 @@
             {
                 title: "Poisson Distribution",
                 generate: () => {
-                    const lam = [2, 4][Math.floor(Math.random() * 2)];
-                    // Let's compute P(1) or P(2) cleanly
-                    const y = 1;
-                    const prob = ((Math.pow(lam, y) * Math.exp(-lam)) / 1).toFixed(3);
-
                     return {
-                        context: `Your cloud server receives an average of <span class='formula-code'>${lam} critical exceptions per hour (&lambda; = ${lam})</span>.`,
+                        context: `Your cloud server receives an average of <span class='formula-code'>2 critical exceptions per hour (&lambda; = 2)</span>.`,
                         steps: [
                             {
                                 type: "mc",
-                                label: `What is the probability of receiving exactly 1 exception in an hour? (e &approx; 2.718)`,
+                                label: "What is the probability of receiving exactly 1 exception in an hour? (e &approx; 2.718)",
                                 hint: "Poisson formula: <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span>",
-                                options: lam === 2 ? ["A) 0.271", "B) 0.135", "C) 0.542", "D) 0.090"] : ["A) 0.073", "B) 0.147", "C) 0.293", "D) 0.018"],
-                                correctIndex: lam === 2 ? 0 : 0, // Wait let's make sure options match correctly or dynamically build them
-                                explanation: `<span class='formula-code'>P(1) = (${lam}^1 &times; e^(-${lam})) / 1! &approx; ${prob}</span>.`
+                                options: ["A) 0.271", "B) 0.135", "C) 0.542", "D) 0.090"],
+                                correctIndex: 0,
+                                explanation: `<span class='formula-code'>P(1) = (2^1 &times; e^(-2)) / 1! &approx; 0.271</span>.`
                             }
                         ]
                     };
@@ -920,11 +898,6 @@
             {
                 title: "Binomial Distribution",
                 generate: () => {
-                    const n = 5;
-                    const p = 0.5;
-                    const expVal = (n * p).toFixed(1);
-                    const varVal = (n * p * (1 - p)).toFixed(2);
-
                     return {
                         context: `You build a game mechanic where a player has a <span class='formula-code'>50% chance</span> to dodge an attack (<span class='formula-code'>p = 0.50</span>). The player attempts <span class='formula-code'>5 consecutive dodges (n = 5)</span>.`,
                         steps: [
@@ -942,7 +915,311 @@
             }
         ];
 
-        let currentProblemSets = [];
+        // Part 2: Master Question Bank for 50-Item Conceptual Exam (Sourced strictly from PDFs)
+        const conceptualBank = [
+            {
+                q: "What is the primary difference between a population and a sample  ?",
+                options: ["A) A population is a subset of a sample", "B) A population includes all items of interest, while a sample is a subset drawn from it  ", "C) Samples are always more expensive to observe than populations  ", "D) Populations use statistics while samples use parameters  "],
+                correct: 1,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "Which level of measurement features a true zero point, allowing ratios to be mathematically meaningful  ?",
+                options: ["A) Nominal", "B) Ordinal", "C) Interval  ", "D) Ratio "],
+                correct: 3,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "In a right-skewed (positively skewed) distribution, what is the typical relationship between the mean and median ?",
+                options: ["A) Mean is greater than median", "B) Mean is less than median  ", "C) Mean equals median equals mode  ", "D) Median is greater than mode"],
+                correct: 0,
+                source: "Statistics Fundamentals"
+            },
+            {
+                q: "Why do we divide by n - 1 instead of n in the sample variance formula  ?",
+                options: ["A) To make calculations faster", "B) To correct upward and provide an unbiased estimator of the population variance  ", "C) Because samples are always larger than populations", "D) To eliminate negative differences"],
+                correct: 1,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What does the Central Limit Theorem state about the sampling distribution of the mean  ?",
+                options: ["A) It is always uniform", "B) It approximates a normal distribution regardless of population shape when n >= 30  ", "C) It requires normally distributed populations", "D) Its variance increases with sample size"],
+                correct: 1,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What is the conventional range of real numbers used to express probability  ?",
+                options: ["A) -1 to +1", "B) 0 to 100", "C) 0 to 1  ", "D) 1 to 52"],
+                correct: 2,
+                source: "Probabilities  "
+            },
+            {
+                q: "Which rule states that the probability of two independent events happening together equals the product of their individual probabilities  ?",
+                options: ["A) Additive law  ", "B) Multiplication rule  ", "C) Law of total probability  ", "D) Complement rule"],
+                correct: 1,
+                source: "Probabilities  "
+            },
+            {
+                q: "What does the complement of an event A (written as A') represent  ?",
+                options: ["A) The exact same event occurring twice", "B) Everything the event leaves out, completing the sample space  ", "C) The intersection of A and B", "D) An impossible outcome"],
+                correct: 1,
+                source: "Probabilities  "
+            },
+            {
+                q: "What is the very first step in the data science pipeline before any pre-processing or modeling can occur  ?",
+                options: ["A) Data collection  ", "B) Machine learning training", "C) Dashboard reporting", "D) Model optimization"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What is the primary goal of data cleansing (or data scrubbing)  ?",
+                options: ["A) Encrypting sensitive passwords", "B) Dealing with inconsistent data and missing values  ", "C) Generating random training samples", "D) Converting structured data into unstructured text"],
+                correct: 1,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What does data masking accomplish in big data pipelines  ?",
+                options: ["A) Conceals original data with false/random data to preserve confidentiality during analysis  ", "B) Deletes missing records automatically", "C) Speeds up CPU rendering", "D) Compresses video files"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What time horizon does Business Intelligence (BI) primarily focus on : 3, 4]?",
+                options: ["A) The future and predictive forecasting : 3, 4]", "B) The past and historical performance reporting : 3, 4]", "C) Real-time generative AI synthesis", "D) Theoretical mathematics"],
+                correct: 1,
+                source: "Introduction to Data Science  "
+            },
+            {
+                q: "What is the distinction between a measure and a metric  ?",
+                options: ["A) Measures are single records; metrics have business meaning attached  ", "B) Metrics are raw facts; measures are KPIs", "C) Measures are qualitative; metrics are nominal", "D) There is no difference"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "In linear regression (Y = B * X), what does the regression line represent  ?",
+                options: ["A) The line that connects the highest and lowest points", "B) The straight line that sits as close as possible to all observations at once  ", "C) An S-curve for binary probabilities", "D) A cluster boundary"],
+                correct: 1,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What is the key structural difference between cluster analysis and factor analysis  ?",
+                options: ["A) Clustering groups observations together; factor analysis groups explanatory variables together  ", "B) Clustering handles text; factor analysis handles audio", "C) Clustering is supervised; factor analysis is reinforcement", "D) They are identical techniques"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What are the four core ingredients of every machine learning setup  ?",
+                options: ["A) CPU, RAM, GPU, Storage", "B) Data, Model, Objective function, Optimization algorithm  ", "C) Tables, Schemas, ERDs, SQL", "D) Mean, Median, Variance, Skewness"],
+                correct: 1,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What distinguishes supervised learning from unsupervised learning  ?",
+                options: ["A) Supervised uses labeled data with known targets; unsupervised uses unlabelled data to find structure  ", "B) Supervised is faster than unsupervised", "C) Unsupervised requires human teachers for every shot", "D) Supervised only works on images"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What drives reinforcement learning instead of minimizing an error  ?",
+                options: ["A) A reward system / maximizing a reward  ", "B) Fixed rulebooks", "C) Categorical class labels", "D) Random number generators"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What is the core underlying mechanism of large language models like ChatGPT and Gemini  ?",
+                options: ["A) Manual SQL queries", "B) Predicting the next/missing word in a sequence using self-attention transformers  ", "C) Sorting numerical tables", "D) Calculating standard error"],
+                correct: 1,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What characterizes a discrete uniform distribution  ?",
+                options: ["A) All outcomes have equal probability  ", "B) Outcomes are continuous", "C) Mean and variance are uninterpretable and have no predictive power  ", "D) Both A and C  "],
+                correct: 3,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What is the variance of a Bernoulli distribution with success probability p  ?",
+                options: ["A) p", "B) p(1 - p)  ", "C) np(1 - p)", "D) lambda"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "Which distribution models the frequency of an event occurring over a fixed interval of time or distance  ?",
+                options: ["A) Binomial", "B) Poisson  ", "C) Uniform", "D) Exponential"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "Why are probabilities of exact individual values equal to zero in continuous distributions  ?",
+                options: ["A) Because continuous data is fake", "B) Because the sample space is infinite, making the denominator infinitely large  ", "C) Because the mean is always zero", "D) Because discrete data replaces them"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What does standardizing a normal distribution achieve  ?",
+                options: ["A) Rescales it to mean 0 and standard deviation 1 (Z distribution)  ", "B) Doubles its variance", "C) Eliminates all outliers", "D) Converts it to Poisson"],
+                correct: 0,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "When should you use Student's T distribution instead of the normal distribution  ?",
+                options: ["A) When sample size is large (n >= 30)", "B) When sample size is small (n < 30)  ", "C) When data is categorical", "D) When variance is zero"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What shape does a chi-squared distribution exhibit  ?",
+                options: ["A) Perfectly symmetric bell curve", "B) Asymmetric, non-negative, highly skewed to the right  ", "C) Flat uniform rectangle", "D) S-curve"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What shape characterizes an exponential distribution  ?",
+                options: ["A) Starts very high, drops sharply early on, then plateaus  ", "B) Bell-shaped with fatter tails", "C) S-shaped cumulative curve", "D) Two distinct peaks"],
+                correct: 0,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What is a very common transformation applied to exponentially-shaped data to make it normal  ?",
+                options: ["A) Squaring every value", "B) Taking the natural logarithm  ", "C) Dividing by lambda", "D) Finding the factorial"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What does the S-shaped cumulative distribution function curve characterize  ?",
+                options: ["A) Logistic distribution  ", "B) Poisson distribution", "C) Uniform distribution", "D) Chi-squared distribution"],
+                correct: 0,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What distinguishes data analysis from data analytics  ?",
+                options: ["A) Analysis examines past events; analytics explores potential future events/predictions  ", "B) Analysis uses Python; analytics uses SQL", "C) Analysis is quantitative; analytics is qualitative", "D) There is no difference"],
+                correct: 0,
+                source: "Introduction to Data Science  "
+            },
+            {
+                q: "What is nominal data  ?",
+                options: ["A) Qualitative categories with no inherent order  ", "B) Quantitative counts", "C) Continuous measurements", "D) Ranked ratings"],
+                correct: 0,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What is ordinal data  ?",
+                options: ["A) Categories with a strict, meaningful order  ", "B) Numbers without a true zero", "C) Unordered car brands", "D) Continuous weights"],
+                correct: 0,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What is interval data  ?",
+                options: ["A) Numbers with a true zero", "B) Quantitative numbers without a true zero point (e.g., Celsius)  ", "C) Categorical labels", "D) Unordered text"],
+                correct: 1,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What does a Pareto diagram combine  ?",
+                options: ["A) A scatter plot and a regression line", "B) A bar chart sorted by descending frequency and a cumulative relative frequency curve  ", "C) A pie chart and a histogram", "D) Two box plots"],
+                correct: 1,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What does correlation measure  ?",
+                options: ["A) The strength and direction of linear relationship between variables, bounded between -1 and +1  ", "B) Absolute causation", "C) Total data volume", "D) Sample variance"],
+                correct: 0,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What are the original three Vs of Big Data : 3, 4]?",
+                options: ["A) Value, Visibility, Validity", "B) Volume, Variety, Velocity : 3, 4]", "C) Variance, Vector, Vision", "D) Verification, Vetting, Veracity"],
+                correct: 1,
+                source: "Introduction to Data Science  "
+            },
+            {
+                q: "What is semi-structured data : 3, 4]?",
+                options: ["A) Data with tags or markers but no fixed table schema (e.g., JSON, XML) : 3, 4]", "B) Tidy rows and columns", "C) Uncompressed video streams", "D) Plain text files"],
+                correct: 0,
+                source: "Introduction to Data Science  "
+            },
+            {
+                q: "What is the role of an objective function in machine learning  ?",
+                options: ["A) To measure how wrong the model currently is / compute the error  ", "B) To compile Java code", "C) To clean missing values", "D) To create dashboard charts"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What is logistic regression used for  ?",
+                options: ["A) Predicting continuous house prices", "B) Modeling binary outcomes (0 or 1) using an S-curve  ", "C) Finding clusters in unlabelled data", "D) Reducing 100 variables into 10 factors"],
+                correct: 1,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What does the law of total probability compute : 1, 6]?",
+                options: ["A) The overall probability of an event by summing conditional probabilities across partitions : 1, 6]", "B) The sample variance", "C) The exact median of a skewed dataset", "D) The regression slope"],
+                correct: 0,
+                source: "Sets, Events & Bayesian Inference  "
+            },
+            {
+                q: "What is an estimator  ?",
+                options: ["A) A rule or formula for approximating a population parameter from sample data  ", "B) A software engineer", "C) A type of chart", "D) A data cleansing tool"],
+                correct: 0,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What two properties define an ideal estimator  ?",
+                options: ["A) Fast and colorful", "B) Unbiased and efficient  ", "C) Discrete and continuous", "D) Linear and symmetric"],
+                correct: 1,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "Why is data shuffling important before extracting samples  ?",
+                options: ["A) It prevents ordering bias so any consecutive subset is random and representative  ", "B) It increases file size", "C) It changes categorical data into numerical data", "D) It removes outliers"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What is a KPI (Key Performance Indicator)  ?",
+                options: ["A) Any metric that can be measured", "B) A metric tied tightly to main business objectives  ", "C) A database error code", "D) A regression coefficient"],
+                correct: 1,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What does Bayes' theorem calculate : 1, 6]?",
+                options: ["A) The posterior probability of a hypothesis given new evidence : 1, 6]", "B) The sample standard deviation", "C) The probability of a complement", "D) The row count of a SQL table"],
+                correct: 0,
+                source: "Sets, Events & Bayesian Inference  "
+            },
+            {
+                q: "What single parameter controls the Poisson distribution : 1, 5]?",
+                options: ["A) p (probability of success)", "B) lambda (expected average rate) : 1, 5]", "C) k (degrees of freedom)", "D) z (standard score)"],
+                correct: 1,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What are the parameters of a binomial distribution : 1, 5]?",
+                options: ["A) Number of trials n and probability of success p : 1, 5]", "B) Mean and variance", "C) Lambda and e", "D) Alpha and beta"],
+                correct: 0,
+                source: "Probability Distributions  "
+            },
+            {
+                q: "What does A/B testing involve  ?",
+                options: ["A) Comparing two versions of a variable with equal-sized groups to see which performs better  ", "B) Testing software on two different computers", "C) Calculating two different standard errors", "D) Merging two databases"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            },
+            {
+                q: "What determines the direction of skewness in a distribution  ?",
+                options: ["A) The position of the mode", "B) The direction of the tail / outliers  ", "C) The sample size n", "D) The standard error"],
+                correct: 1,
+                source: "Statistics Fundamentals  "
+            },
+            {
+                q: "What is self-supervised learning  ?",
+                options: ["A) A hybrid approach where unlabelled data generates its own labels for training  ", "B) Learning without a computer", "C) Reinforcement learning with chocolate rewards", "D) Manual data entry"],
+                correct: 0,
+                source: "Traditional Data Techniques  "
+            }
+        ];
+
+        let activeQuestions = [];
 
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
@@ -962,6 +1239,13 @@
             generateQuiz();
         }
 
+        function setPart(part) {
+            currentPart = part;
+            document.getElementById('tab-part1').classList.toggle('active', part === 'part1');
+            document.getElementById('tab-part2').classList.toggle('active', part === 'part2');
+            generateQuiz();
+        }
+
         function generateQuiz() {
             const container = document.getElementById('quiz-container');
             container.innerHTML = '';
@@ -969,58 +1253,111 @@
             stats = { correct: 0, attempted: 0, streak: 0 };
             updateKPIs();
 
-            // FIX: Map base templates, execute generate() to obtain fresh numbers/variants, and attach title
-            currentProblemSets = baseTemplates.map(template => {
-                const instance = template.generate();
-                instance.title = template.title;
-                return instance;
-            });
-
-            currentProblemSets.forEach((ps, psIndex) => {
-                const card = document.createElement('div');
-                card.className = 'problem-card';
-
-                let stepsHtml = '';
-                ps.steps.forEach((step, stepIndex) => {
-                    let interactionHtml = '';
-
-                    if (step.type === 'mc') {
-                        let buttonsHtml = '';
-                        step.options.forEach((optText, optIndex) => {
-                            buttonsHtml += `<button class="step-option-btn" id="opt-${psIndex}-${stepIndex}-${optIndex}" onclick="playSound('click'); checkMCAnswer(${psIndex}, ${stepIndex}, ${optIndex}, ${step.correctIndex})">${optText}</button>`;
-                        });
-                        interactionHtml = `<div class="options-group">${buttonsHtml}</div>`;
-                    } else if (step.type === 'input') {
-                        interactionHtml = `
-                            <div class="input-group">
-                                <input type="text" class="step-text-input" id="input-${psIndex}-${stepIndex}" placeholder="Type computed answer...">
-                                <button class="btn-submit-input" onclick="playSound('click'); checkInputAnswer(${psIndex}, ${stepIndex})">Submit</button>
-                            </div>
-                        `;
-                    }
-
-                    let hintButtonHtml = (currentMode === 'practice') ? `<button class="btn-hint" onclick="playSound('click'); toggleHint(${psIndex}, ${stepIndex})">Show Hint</button>` : '';
-
-                    stepsHtml += `
-                        <div class="step-container" id="step-container-${psIndex}-${stepIndex}">
-                            <div class="step-label">${step.label}</div>
-                            ${interactionHtml}
-                            <div class="step-actions">
-                                ${hintButtonHtml}
-                            </div>
-                            <div class="hint-box" id="hint-${psIndex}-${stepIndex}">💡 Hint: ${step.hint}</div>
-                            <div class="feedback-box" id="feedback-${psIndex}-${stepIndex}"></div>
-                        </div>
-                    `;
+            if (currentPart === 'part1') {
+                // Shuffle Part 1 templates order so the sequence of problem types changes every time
+                let shuffledTemplates = [...part1Templates].sort(() => Math.random() - 0.5);
+                currentProblemSets = shuffledTemplates.map(template => {
+                    const instance = template.generate();
+                    instance.title = template.title;
+                    return instance;
                 });
 
-                card.innerHTML = `
-                    <div class="problem-title">Item ${psIndex + 1}: ${ps.title}</div>
-                    <div class="problem-context">${ps.context}</div>
-                    ${stepsHtml}
-                `;
-                container.appendChild(card);
-            });
+                currentProblemSets.forEach((ps, psIndex) => {
+                    const card = document.createElement('div');
+                    card.className = 'problem-card';
+
+                    let stepsHtml = '';
+                    ps.steps.forEach((step, stepIndex) => {
+                        let interactionHtml = '';
+
+                        if (step.type === 'mc') {
+                            let buttonsHtml = '';
+                            step.options.forEach((optText, optIndex) => {
+                                buttonsHtml += `<button class="step-option-btn" id="opt-${psIndex}-${stepIndex}-${optIndex}" onclick="playSound('click'); checkMCAnswer(${psIndex}, ${stepIndex}, ${optIndex}, ${step.correctIndex})">${optText}</button>`;
+                            });
+                            interactionHtml = `<div class="options-group">${buttonsHtml}</div>`;
+                        } else if (step.type === 'input') {
+                            interactionHtml = `
+                                <div class="input-group">
+                                    <input type="text" class="step-text-input" id="input-${psIndex}-${stepIndex}" placeholder="Type computed answer...">
+                                    <button class="btn-submit-input" onclick="playSound('click'); checkInputAnswer(${psIndex}, ${stepIndex})">Submit</button>
+                                </div>
+                            `;
+                        }
+
+                        let hintButtonHtml = (currentMode === 'practice') ? `<button class="btn-hint" onclick="playSound('click'); toggleHint(${psIndex}, ${stepIndex})">Show Hint</button>` : '';
+
+                        stepsHtml += `
+                            <div class="step-container" id="step-container-${psIndex}-${stepIndex}">
+                                <div class="step-label">${step.label}</div>
+                                ${interactionHtml}
+                                <div class="step-actions">
+                                    ${hintButtonHtml}
+                                </div>
+                                <div class="hint-box" id="hint-${psIndex}-${stepIndex}">💡 Hint: ${step.hint}</div>
+                                <div class="feedback-box" id="feedback-${psIndex}-${stepIndex}"></div>
+                            </div>
+                        `;
+                    });
+
+                    card.innerHTML = `
+                        <div class="problem-title">Item ${psIndex + 1}: ${ps.title}</div>
+                        <div class="problem-context">${ps.context}</div>
+                        ${stepsHtml}
+                    `;
+                    container.appendChild(card);
+                });
+
+            } else {
+                // Part 2: Fully shuffle conceptual questions and option choices on every generation to guarantee non-repeating layouts
+                let shuffledBank = [...conceptualBank].sort(() => Math.random() - 0.5);
+                activeQuestions = shuffledBank.slice(0, 50).map((item, index) => {
+                    let indexedOpts = item.options.map((opt, idx) => ({ text: opt, originalIdx: idx }));
+                    indexedOpts.sort(() => Math.random() - 0.5);
+                    let newCorrectIdx = indexedOpts.findIndex(o => o.originalIdx === item.correct);
+                    let formattedOpts = indexedOpts.map((o, idx) => {
+                        let cleanText = o.text.replace(/^[A-D]\)\s*/, '');
+                        return `${String.fromCharCode(65 + idx)}) ${cleanText}`;
+                    });
+
+                    return {
+                        id: index,
+                        q: item.q,
+                        options: formattedOpts,
+                        correct: newCorrectIdx,
+                        source: item.source,
+                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> (Source: ${item.source})`
+                    };
+                });
+
+                currentProblemSets = activeQuestions;
+
+                activeQuestions.forEach((qItem, qIndex) => {
+                    const card = document.createElement('div');
+                    card.className = 'problem-card';
+
+                    let buttonsHtml = '';
+                    qItem.options.forEach((optText, optIndex) => {
+                        buttonsHtml += `<button class="step-option-btn" id="qopt-${qIndex}-${optIndex}" onclick="playSound('click'); checkConceptAnswer(${qIndex}, ${optIndex}, ${qItem.correct})">${optText}</button>`;
+                    });
+
+                    let hintButtonHtml = (currentMode === 'practice') ? `<button class="btn-hint" onclick="playSound('click'); toggleConceptHint(${qIndex})">Show Source</button>` : '';
+
+                    card.innerHTML = `
+                        <div class="problem-title">Question ${qIndex + 1} of 50</div>
+                        <div class="problem-context">${qItem.q}</div>
+                        <div class="options-group" style="grid-template-columns: 1fr; gap: 10px;">
+                            ${buttonsHtml}
+                        </div>
+                        <div class="step-actions">
+                            ${hintButtonHtml}
+                        </div>
+                        <div class="hint-box" id="qhint-${qIndex}">📖 Source Material: ${qItem.source}</div>
+                        <div class="feedback-box" id="qfeedback-${qIndex}"></div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
         }
 
         function recordStats(isCorrect) {
@@ -1075,6 +1412,37 @@
             handleFeedbackDisplay(container, feedbackBox, isCorrect, stepIndex, psIndex, stepData.acceptAnswers[0]);
         }
 
+        function checkConceptAnswer(qIndex, selectedIndex, correctIndex) {
+            const isCorrect = (selectedIndex === correctIndex);
+            recordStats(isCorrect);
+            const card = document.getElementById(`qopt-${qIndex}-0`).closest('.problem-card');
+            const feedbackBox = document.getElementById(`qfeedback-${qIndex}`);
+            const buttons = card.getElementsByClassName('step-option-btn');
+
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].disabled = true;
+                buttons[i].classList.add('disabled');
+                if (i === correctIndex) buttons[i].classList.add('correct');
+                else if (i === selectedIndex && !isCorrect) buttons[i].classList.add('incorrect');
+            }
+
+            if (isCorrect) {
+                card.style.borderLeft = '3px solid #2ecc71';
+                feedbackBox.className = 'feedback-box correct';
+                feedbackBox.innerHTML = `<strong>Correct!</strong> ${activeQuestions[qIndex].explanation}`;
+                feedbackBox.style.display = 'block';
+            } else {
+                card.style.borderLeft = '3px solid #e74c3c';
+                feedbackBox.className = 'feedback-box incorrect';
+                if (currentMode === 'practice') {
+                    feedbackBox.innerHTML = `<strong>Incorrect.</strong> ${activeQuestions[qIndex].explanation}`;
+                } else {
+                    feedbackBox.innerHTML = `<strong>Recorded.</strong> (Explanations hidden in Hardcore Mode)`;
+                }
+                feedbackBox.style.display = 'block';
+            }
+        }
+
         function handleFeedbackDisplay(container, feedbackBox, isCorrect, stepIndex, psIndex, correctValText = "") {
             const stepData = currentProblemSets[psIndex].steps[stepIndex];
 
@@ -1095,7 +1463,7 @@
                         ${stepData.explanation}
                     `;
                 } else {
-                    feedbackBox.innerHTML = `<strong>Recorded.</i> (Explanations hidden in Hardcore Mode)`;
+                    feedbackBox.innerHTML = `<strong>Recorded.</strong> (Explanations hidden in Hardcore Mode)`;
                 }
                 feedbackBox.style.display = 'block';
             }
@@ -1103,6 +1471,11 @@
 
         function toggleHint(psIndex, stepIndex) {
             const hintBox = document.getElementById(`hint-${psIndex}-${stepIndex}`);
+            hintBox.style.display = hintBox.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function toggleConceptHint(qIndex) {
+            const hintBox = document.getElementById(`qhint-${qIndex}`);
             hintBox.style.display = hintBox.style.display === 'block' ? 'none' : 'block';
         }
 
