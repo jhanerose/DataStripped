@@ -854,8 +854,12 @@
             stats = { correct: 0, attempted: 0, streak: 0 };
             updateKPIs();
 
-            // Render all 10 base template problem sets in order
-            currentProblemSets = baseTemplates.map(template => template.generate());
+            // FIX: Map base templates and explicitly attach the title to the generated instance object
+            currentProblemSets = baseTemplates.map(template => {
+                const instance = template.generate();
+                instance.title = template.title;
+                return instance;
+            });
 
             currentProblemSets.forEach((ps, psIndex) => {
                 const card = document.createElement('div');
@@ -889,7 +893,7 @@
                             <div class="step-actions">
                                 ${hintButtonHtml}
                             </div>
-                            <div class="hint-box" id="hint-${psIndex}-${stepIndex}"> ${step.hint}</div>
+                            <div class="hint-box" id="hint-${psIndex}-${stepIndex}">💡 Hint: ${step.hint}</div>
                             <div class="feedback-box" id="feedback-${psIndex}-${stepIndex}"></div>
                         </div>
                     `;
