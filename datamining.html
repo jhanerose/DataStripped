@@ -552,8 +552,8 @@
             
             <div class="selector-wrapper" style="margin-top: 20px;">
                 <div class="part-selector">
-                    <button class="part-tab active" id="tab-part1" onclick="playSound('click'); setPart('part1')">Part 1: Computational (10)</button>
-                    <button class="part-tab" id="tab-part2" onclick="playSound('click'); setPart('part2')">Part 2: Conceptual Exam (50)</button>
+                    <button class="part-tab active" id="tab-part1" onclick="playSound('click'); setPart('part1')">Part 1: Computational (5 Random)</button>
+                    <button class="part-tab" id="tab-part2" onclick="playSound('click'); setPart('part2')">Part 2: Conceptual Exam (10 Random)</button>
                 </div>
                 <div class="mode-selector">
                     <button class="mode-tab active" id="tab-practice" onclick="playSound('click'); setMode('practice')">Practice Mode</button>
@@ -578,9 +578,9 @@
                 <li><strong>Complements:</strong> <span class="formula-code">P(A') = 1 - P(A)</span> or <span class="formula-code">P(A) + P(A') = 1</span></li>
                 <li><strong>Interval Width:</strong> <span class="formula-code">Interval width = (largest - smallest) / no. of intervals</span></li>
                 <li><strong>Mean:</strong> <span class="formula-code">x&#772; = &Sigma;x / n</span></li>
-                <li><strong>Population Variance:</strong> <span class="formula-code">&sigma;&sup2; = &Sigma;(x - &mu;&sup2;) / N</span></li>
+                <li><strong>Population Variance:</strong> <span class="formula-code">&sigma;&sup2; = &Sigma;(x - &mu;)&sup2; / N</span></li>
                 <li><strong>Sample Variance:</strong> <span class="formula-code">s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span></li>
-                <li><strong>Standard Deviation:</strong> <span class="formula-code">&sigma; = &radic;[&Sigma;(x - &mu;&sup2;) / N]</span> or <span class="formula-code">s = &radic;s&sup2;</span></li>
+                <li><strong>Standard Deviation:</strong> <span class="formula-code">&sigma; = &radic;[&Sigma;(x - &mu;)&sup2; / N]</span> or <span class="formula-code">s = &radic;s&sup2;</span></li>
                 <li><strong>Coefficient of Variation:</strong> <span class="formula-code">CV = Standard Deviation / Mean</span></li>
                 <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span></li>
                 <li><strong>Correlation Coefficient (r):</strong> <span class="formula-code">rxy = cov(x,y) / (s_x &middot; s_y)</span></li>
@@ -1477,7 +1477,7 @@
                 source: "Statistics Fundamentals"
             },
             {
-                q: "What is a Type I error?",
+                q: "What is Type I error?",
                 options: ["A) Rejecting a true null hypothesis (False Positive)", "B) Failing to reject a false null hypothesis (False Negative)", "C) Coding syntax error", "D) Server timeout error"],
                 correct: 0,
                 source: "Statistics Fundamentals"
@@ -1525,7 +1525,8 @@
             updateKPIs();
 
             if (currentPart === 'part1') {
-                let shuffledTemplates = [...part1Templates].sort(() => Math.random() - 0.5);
+                // Shuffle and pick 5 random computational sets to prevent repetition
+                let shuffledTemplates = [...part1Templates].sort(() => Math.random() - 0.5).slice(0, 5);
                 currentProblemSets = shuffledTemplates.map(template => {
                     const instance = template.generate();
                     instance.title = template.title;
@@ -1579,8 +1580,9 @@
                 });
 
             } else {
+                // Shuffle and pick 10 random conceptual questions to keep practice sessions fresh and unique
                 let shuffledBank = [...conceptualBank].sort(() => Math.random() - 0.5);
-                activeQuestions = shuffledBank.slice(0, 50).map((item, index) => {
+                activeQuestions = shuffledBank.slice(0, 10).map((item, index) => {
                     let indexedOpts = item.options.map((opt, idx) => ({ text: opt, originalIdx: idx }));
                     indexedOpts.sort(() => Math.random() - 0.5);
                     let newCorrectIdx = indexedOpts.findIndex(o => o.originalIdx === item.correct);
@@ -1613,7 +1615,7 @@
                     let hintButtonHtml = (currentMode === 'practice') ? `<button class="btn-hint" onclick="playSound('click'); toggleConceptHint(${qIndex})">Show Source</button>` : '';
 
                     card.innerHTML = `
-                        <div class="problem-title">Question ${qIndex + 1} of 50</div>
+                        <div class="problem-title">Question ${qIndex + 1} of 10</div>
                         <div class="problem-context">${qItem.q}</div>
                         <div class="options-group" style="grid-template-columns: 1fr; gap: 10px;">
                             ${buttonsHtml}
