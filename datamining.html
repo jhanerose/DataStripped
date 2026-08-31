@@ -580,7 +580,7 @@
                 <li><strong>Mean:</strong> <span class="formula-code">x&#772; = &Sigma;x / n</span></li>
                 <li><strong>Population Variance:</strong> <span class="formula-code">&sigma;&sup2; = &Sigma;(x - &mu;&sup2;) / N</span></li>
                 <li><strong>Sample Variance:</strong> <span class="formula-code">s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span></li>
-                <li><strong>Standard Deviation:</strong> <span class="formula-code">&sigma; = &radic;[&Sigma;(x - &mu;)&sup2; / N]</span> or <span class="formula-code">s = &radic;s&sup2;</span></li>
+                <li><strong>Standard Deviation:</strong> <span class="formula-code">&sigma; = &radic;[&Sigma;(x - &mu;&sup2;) / N]</span> or <span class="formula-code">s = &radic;s&sup2;</span></li>
                 <li><strong>Coefficient of Variation:</strong> <span class="formula-code">CV = Standard Deviation / Mean</span></li>
                 <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span></li>
                 <li><strong>Correlation Coefficient (r):</strong> <span class="formula-code">rxy = cov(x,y) / (s_x &middot; s_y)</span></li>
@@ -1718,7 +1718,16 @@
             if (isCorrect) {
                 container.style.borderLeftColor = '#2ecc71';
                 feedbackBox.className = 'feedback-box correct';
-                feedbackBox.innerHTML = `<strong>Correct!</strong> You nailed this step.`;
+
+                if (currentMode === 'practice') {
+                    feedbackBox.innerHTML = `
+                        <strong>Correct!</strong> You nailed this step.<br><br>
+                        <strong>Step-by-step Breakdown:</strong><br>
+                        ${stepData.explanation}
+                    `;
+                } else {
+                    feedbackBox.innerHTML = `<strong>Correct!</strong>`;
+                }
                 feedbackBox.style.display = 'block';
             } else {
                 container.style.borderLeftColor = '#e74c3c';
