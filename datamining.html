@@ -578,13 +578,13 @@
                 <li><strong>Complements:</strong> <span class="formula-code">P(A') = 1 - P(A)</span> or <span class="formula-code">P(A) + P(A') = 1</span></li>
                 <li><strong>Interval Width:</strong> <span class="formula-code">Interval width = (largest - smallest) / no. of intervals</span></li>
                 <li><strong>Mean:</strong> <span class="formula-code">x&#772; = &Sigma;x / n</span></li>
-                <li><strong>Population Variance:</strong> <span class="formula-code">&sigma;&sup2; = &Sigma;(x - &mu;)&sup2; / N</span></li>
+                <li><strong>Population Variance:</strong> <span class="formula-code">&sigma;&sup2; = &Sigma;(x - &mu;&sup2; / N</span></li>
                 <li><strong>Sample Variance:</strong> <span class="formula-code">s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span></li>
                 <li><strong>Standard Deviation:</strong> <span class="formula-code">&sigma; = &radic;[&Sigma;(x - &mu;)&sup2; / N]</span> or <span class="formula-code">s = &radic;s&sup2;</span></li>
                 <li><strong>Coefficient of Variation:</strong> <span class="formula-code">CV = Standard Deviation / Mean</span></li>
-                <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (N - 1)</span></li>
+                <li><strong>Sample Covariance:</strong> <span class="formula-code">cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span></li>
                 <li><strong>Correlation Coefficient (r):</strong> <span class="formula-code">rxy = cov(x,y) / (s_x &middot; s_y)</span></li>
-                <li><strong>Standard Error:</strong> <span class="formula-code">SE = &sigma; / &radic;n</span></li>
+                <li><strong>Standard Error:</strong> <span class="formula-code">SE = s / &radic;n</span></li>
                 <li><strong>Z-Score:</strong> <span class="formula-code">z = (x - &mu;) / &sigma;</span></li>
                 <li><strong>Bernoulli Distribution:</strong> <span class="formula-code">E(x) = p</span> , <span class="formula-code">&sigma;&sup2; = p(1 - p)</span></li>
                 <li><strong>Binomial Probability Function:</strong> <span class="formula-code">P(y) = C(n,y) &middot; p^y &middot; (1-p)^(n-y)</span> where <span class="formula-code">C(n,y) = n! / (y!(n-y)!)</span></li>
@@ -912,7 +912,7 @@
 
                     const contexts = [
                         `You parse voice commands. <span class='formula-code'>40%</span> of commands are media (<span class='formula-code'>P(M)=0.40</span>). Keyword "play" appears in <span class='formula-code'>75%</span> of media commands (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'>10%</span> of non-media commands (<span class='formula-code'>P(K|not M)=0.10</span>).`,
-                        `You analyze user logins. <span class='formula-code'>40%</span> originate from mobile devices (<span class='formula-code'>P(M)=0.40</span>). 2FA triggers in <span class='formula-code'>75%</span> of mobile logins (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'><span>10%</span> of non-mobile logins (<span class='formula-code'>P(K|not M)=0.10</span>).`
+                        `You analyze user logins. <span class='formula-code'>40%</span> originate from mobile devices (<span class='formula-code'>P(M)=0.40</span>). 2FA triggers in <span class='formula-code'>75%</span> of mobile logins (<span class='formula-code'>P(K|M)=0.75</span>) and in <span class='formula-code'>10%</span> of non-mobile logins (<span class='formula-code'>P(K|not M)=0.10</span>).`
                     ];
                     const selectedContext = contexts[Math.floor(Math.random() * contexts.length)];
 
@@ -983,7 +983,7 @@
                             {
                                 type: "mc",
                                 label: "a) Identify the Expected Rate Parameter E(y) and Variance &sigma;&sup2; for Poisson.",
-                                hint: "Poisson Expectation & Variance <span class='formula-code'>E(y) = &lambda;</span> and <span class='formula-code'>&sigma;&sup2; = &lambda;</span>.",
+                                hint: "Poisson Expectation & Variance <span class='formula-code'>E(y) = &lambda;</span> and <span class='formula-code'>&sigma;&sup2; = &lambda;</span> (they are equal).",
                                 options: [
                                     `A) E(y) = ${lam}, Variance = ${lam}`,
                                     `B) E(y) = ${lam}, Variance = ${lam * 2}`,
@@ -996,8 +996,9 @@
                                     <strong>Solution:</strong>
                                     <div class="centered-solution-box">
                                         <span class='formula-code'>E(y) = &lambda;  and  &sigma;&sup2; = &lambda;</span><br>
+                                        <strong>Both values are equal to &lambda; = ${lam}.</strong>
                                     </div>
-                                    <strong>Step Explanation & Conclusion:</strong> Poisson distribution properties dictate that E(y) and variance equal <strong>${lam}</strong>.
+                                    <strong>Step Explanation & Conclusion:</strong> Poisson distribution properties dictate that E(y) and variance are equal and both equal <strong>${lam}</strong>.
                                 `
                             },
                             {
@@ -1012,6 +1013,7 @@
                                     <div class="centered-solution-box">
                                         <span class='formula-code'>P(y) = (&lambda;^y &middot; e^(&minus;&lambda;)) / y!</span><br>
                                         <span class='formula-code'>P(1) = (${lam}^1 &middot; e^(-${lam})) / 1!</span><br>
+                                        <strong>Final Answer: P(1) = ${prob}</strong>
                                     </div>
                                     <strong>Step Explanation & Conclusion:</strong> The exact probability is <strong>${prob}</strong>.
                                 `
@@ -1029,10 +1031,10 @@
                     const cvFormatted = (sd / mean).toFixed(2);
                     const sigma = 120;
                     const n = 144;
-                    const se = (sigma / Math.sqrt(n)).toFixed(2);
+                    const se = (sd / Math.sqrt(n)).toFixed(2); // Fixed using sample standard deviation 's' for SE formula
 
                     return {
-                        context: `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>. In addition, your API population standard deviation is <span class='formula-code'>&sigma; = ${sigma} ms</span> with a sample size <span class='formula-code'>n = ${n}</span>.`,
+                        context: `In your database query performance tests, response time has a <span class='formula-code'>Mean = ${mean} ms</span> and a <span class='formula-code'>Std Dev = ${sd} ms</span>. In addition, your sample standard deviation is <span class='formula-code'>s = ${sd} ms</span> with a sample size <span class='formula-code'>n = ${n}</span>.`,
                         steps: [
                             {
                                 type: "input",
@@ -1045,6 +1047,7 @@
                                     <div class="centered-solution-box">
                                         <span class='formula-code'>CV = Std Deviation / Mean</span><br>
                                         <span class='formula-code'>CV = ${sd} / ${mean}</span><br>
+                                        <strong>Final Answer: CV = ${cv}</strong>
                                     </div>
                                     <strong>Step Explanation & Conclusion:</strong> Coefficient of variation is <strong>${cv}</strong>.
                                 `
@@ -1052,7 +1055,7 @@
                             {
                                 type: "mc",
                                 label: "b) Compute the Standard Error (SE) of the mean.",
-                                hint: "Standard Error <span class='formula-code'>SE = &sigma; / &radic;n</span>.",
+                                hint: "Standard Error <span class='formula-code'>SE = s / &radic;n</span>.",
                                 options: [
                                     `A) SE = ${se}`,
                                     `B) SE = ${(Number(se)+2.5).toFixed(2)}`,
@@ -1061,11 +1064,12 @@
                                 ].sort(() => Math.random() - 0.5),
                                 correctIndex: 0,
                                 explanation: `
-                                    <strong>Given:</strong> Population standard deviation <span class='formula-code'>&sigma; = ${sigma}</span>, Sample size <span class='formula-code'>n = ${n}</span>.<br><br>
+                                    <strong>Given:</strong> Sample standard deviation <span class='formula-code'>s = ${sd}</span>, Sample size <span class='formula-code'>n = ${n}</span>.<br><br>
                                     <strong>Solution:</strong>
                                     <div class="centered-solution-box">
-                                        <span class='formula-code'>SE = &sigma; / &radic;n</span><br>
-                                        <span class='formula-code'>SE = ${sigma} / &radic;${n}</span><br>
+                                        <span class='formula-code'>SE = s / &radic;n</span><br>
+                                        <span class='formula-code'>SE = ${sd} / &radic;${n} = ${sd} / 12</span><br>
+                                        <strong>Final Answer: SE = ${se}</strong>
                                     </div>
                                     <strong>Step Explanation & Conclusion:</strong> Standard error of the mean is <strong>${se}</strong>.
                                 `
@@ -1085,7 +1089,8 @@
                     for(let i=0; i<3; i++) {
                         sumProd += (xVals[i] - xMean) * (yVals[i] - yMean);
                     }
-                    const cov = (sumProd / 2).toFixed(1);
+                    const n = 3;
+                    const cov = (sumProd / (n - 1)).toFixed(1); // Fixed denominator to n - 1 = 2
                     const covVal = parseFloat(cov);
 
                     return {
@@ -1096,7 +1101,7 @@
                                 label: "Compute the sample covariance, cov(x,y).",
                                 hint: "Sample Covariance <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span>.",
                                 options: [
-                                    `A) ${covVal}`,
+                                    `A) ${covVal.toFixed(1)}`,
                                     `B) ${(covVal + 5).toFixed(1)}`,
                                     `C) ${Math.max(0, covVal - 5).toFixed(1)}`,
                                     `D) ${(covVal * 2).toFixed(1)}`
@@ -1108,6 +1113,7 @@
                                     <div class="centered-solution-box">
                                         <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span><br>
                                         <span class='formula-code'>cov(x,y) = ${sumProd} / (3 - 1) = ${sumProd} / 2</span><br>
+                                        <strong>Final Answer: cov(x,y) = ${cov}</strong>
                                     </div>
                                     <strong>Step Explanation & Conclusion:</strong> Sample covariance is <strong>${cov}</strong>.
                                 `
@@ -1718,7 +1724,7 @@
                         ${stepData.explanation}
                     `;
                 } else {
-                    feedbackBox.innerHTML = `<strong>Recorded.</strong> (Explanations hidden in Hardcore Mode)`;
+                    feedbackBox.innerHTML = `<strong>Recorded.</strong> (Sample breakdown hidden in Hardcore Mode)`;
                 }
                 feedbackBox.style.display = 'block';
             }
