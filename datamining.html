@@ -719,7 +719,7 @@
                             {
                                 type: "mc",
                                 label: "a) Compute the Sample Variance (s&sup2;).",
-                                hint: "Sample Variance <span class='formula-code'>s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span>. Divide total squared deviations by <span class='formula-code'>n - 1 = 4</span>.",
+                                hint: "Sample Variance <span class='formula-code'>s&sup2; = &Sigma;(x - x&#772;)&sup2; / (n - 1)</span>",
                                 options: varOptions,
                                 correctIndex: correctVarIndex,
                                 explanation: `
@@ -736,7 +736,7 @@
                             {
                                 type: "mc",
                                 label: "b) Compute the Sample Standard Deviation (s).",
-                                hint: "Sample Standard Deviation <span class='formula-code'>s = &radic;s&sup2;</span>.",
+                                hint: "Sample Standard Deviation <span class='formula-code'>s = &radic;s&sup2;</span>",
                                 options: formattedSdOpts,
                                 correctIndex: correctSdIndex,
                                 explanation: `
@@ -791,7 +791,7 @@
                             {
                                 type: "mc",
                                 label: "a) Compute the Expected Number of Successful Outcomes E(X).",
-                                hint: "Expected Value <span class='formula-code'>E(X) = np</span>.",
+                                hint: "Expected Value <span class='formula-code'>E(X) = n &middot; p</span>",
                                 options: expOpts,
                                 correctIndex: correctExpIdx,
                                 explanation: `
@@ -808,7 +808,7 @@
                             {
                                 type: "mc",
                                 label: "b) Compute the Binomial Variance (&sigma;&sup2;).",
-                                hint: "Binomial Variance <span class='formula-code'>&sigma;&sup2; = np(1 - p)</span>.",
+                                hint: "Binomial Variance <span class='formula-code'>&sigma;&sup2; = n &middot; p &middot; (1 - p)</span>",
                                 options: varOpts,
                                 correctIndex: correctVarIdx,
                                 explanation: `
@@ -865,7 +865,7 @@
                             {
                                 type: "mc",
                                 label: "a) Compute the Intersection Probability P(A &cap; B) using the Additive Law.",
-                                hint: "Additive Law <span class='formula-code'>P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span> rearranged to solve for intersection.",
+                                hint: "Additive Law <span class='formula-code'>P(A &cup; B) = P(A) + P(B) - P(A &cap; B)</span>",
                                 options: interOpts,
                                 correctIndex: correctInterIdx,
                                 explanation: `
@@ -882,7 +882,7 @@
                             {
                                 type: "mc",
                                 label: "b) Compute the Conditional Probability P(A|B).",
-                                hint: "Conditional Probability <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span>.",
+                                hint: "Conditional Probability <span class='formula-code'>P(A|B) = P(A &cap; B) / P(B)</span>",
                                 options: condOpts,
                                 correctIndex: correctCondIdx,
                                 explanation: `
@@ -922,7 +922,7 @@
                             {
                                 type: "mc",
                                 label: "a) Compute the Overall Probability P(K) using the Law of Total Probability.",
-                                hint: "Law of Total Probability <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>.",
+                                hint: "Law of Total Probability <span class='formula-code'>P(E) = P(E|H)&middot;P(H) + P(E|not H)&middot;P(not H)</span>",
                                 options: ["A) 0.360", "B) 0.420", "C) 0.350", "D) 0.500"],
                                 correctIndex: 0,
                                 explanation: `
@@ -939,7 +939,7 @@
                             {
                                 type: "input",
                                 label: "b) If the condition is detected, compute P(M|K) using Bayes' Theorem. (Type rounded decimal to 3 places)",
-                                hint: "Bayes' Theorem <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>.",
+                                hint: "Bayes' Theorem <span class='formula-code'>P(H|E) = (P(E|H) &middot; P(H)) / P(E)</span>",
                                 acceptAnswers: ["0.833", "0.83"],
                                 explanation: `
                                     <strong>Given:</strong> <span class='formula-code'>P(K|M) = 0.75</span>, <span class='formula-code'>P(M) = 0.40</span>, <span class='formula-code'>P(K) = 0.360</span>.<br><br>
@@ -991,7 +991,7 @@
                             {
                                 type: "mc",
                                 label: "a) Identify the Expected Rate Parameter E(y) and Variance &sigma;&sup2; for Poisson.",
-                                hint: "Poisson Expectation & Variance <span class='formula-code'>E(y) = &lambda;</span> and <span class='formula-code'>&sigma;&sup2; = &lambda;</span> (they are equal).",
+                                hint: "Poisson Expectation & Variance <span class='formula-code'>E(y) = &lambda;</span>, <span class='formula-code'>&sigma;&sup2; = &lambda;</span>",
                                 options: poissonOpts,
                                 correctIndex: correctPoissonIdx,
                                 explanation: `
@@ -1049,7 +1049,7 @@
                             {
                                 type: "input",
                                 label: "a) Calculate the Coefficient of Variation (CV) as a decimal.",
-                                hint: "Coefficient of Variation <span class='formula-code'>CV = Std Deviation / Mean</span>.",
+                                hint: "Coefficient of Variation <span class='formula-code'>CV = Std Deviation / Mean</span>",
                                 acceptAnswers: [cv, cvFormatted, String(Number(cv))],
                                 explanation: `
                                     <strong>Given:</strong> Mean = ${mean}, Std Dev = ${sd}.<br><br>
@@ -1065,7 +1065,7 @@
                             {
                                 type: "mc",
                                 label: "b) Compute the Standard Error (SE) of the mean.",
-                                hint: "Standard Error <span class='formula-code'>SE = s / &radic;n</span>.",
+                                hint: "Standard Error <span class='formula-code'>SE = s / &radic;n</span>",
                                 options: seOpts,
                                 correctIndex: correctSeIdx,
                                 explanation: `
@@ -1112,7 +1112,7 @@
                             {
                                 type: "mc",
                                 label: "Compute the sample covariance, cov(x,y).",
-                                hint: "Sample Covariance <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span>.",
+                                hint: "Sample Covariance <span class='formula-code'>cov(x,y) = &Sigma;(x - x&#772;)(y - y&#772;) / (n - 1)</span>",
                                 options: covOpts,
                                 correctIndex: correctCovIdx,
                                 explanation: `
@@ -1595,7 +1595,7 @@
                         options: formattedOpts,
                         correct: newCorrectIdx,
                         source: item.source,
-                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> ${item.source}`
+                        explanation: `Correct option was <strong>${formattedOpts[newCorrectIdx]}</strong> Source: ${item.source}`
                     };
                 });
 
@@ -1698,7 +1698,11 @@
             if (isCorrect) {
                 card.style.borderLeft = '3px solid #2ecc71';
                 feedbackBox.className = 'feedback-box correct';
-                feedbackBox.innerHTML = `<strong>Correct!</strong> ${activeQuestions[qIndex].explanation}`;
+                if (currentMode === 'practice') {
+                    feedbackBox.innerHTML = `<strong>Correct!</strong> ${activeQuestions[qIndex].explanation}`;
+                } else {
+                    feedbackBox.innerHTML = `<strong>Correct!</strong>`;
+                }
                 feedbackBox.style.display = 'block';
             } else {
                 card.style.borderLeft = '3px solid #e74c3c';
